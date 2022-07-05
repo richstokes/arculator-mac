@@ -1,0 +1,1 @@
+My attempt at getting arculator to compile and run successfully on MacOS.
