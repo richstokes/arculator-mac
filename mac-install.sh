@@ -50,7 +50,7 @@ fi
 autoreconf -i #Fixes "configure: error: cannot find install-sh, install.sh"
 
 echo "Building arculator.."
-make clean
+make clean || true
 ./configure --enable-release-build
 make -j8
 
