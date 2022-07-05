@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-ROMFILE='../../../risocs-3.71.rom' # PATH to RISOCS ROM file
+ROMFILE='../../../riscos.rom' # PATH to RISOCS ROM file
 
 # Check for or install homebrew
 if test ! $(which brew); then
