@@ -30,12 +30,11 @@ typedef struct sdl_render_driver_t
 } sdl_render_driver_t;
 
 static sdl_render_driver_t sdl_render_drivers[] =
-{
+    {
         {RENDERER_AUTO, "auto", 1},
         {RENDERER_DIRECT3D, "direct3d", 0},
         {RENDERER_OPENGL, "opengl", 0},
-        {RENDERER_SOFTWARE, "software", 0}
-};
+        {RENDERER_SOFTWARE, "software", 0}};
 
 int video_renderer_available(int id)
 {
@@ -49,13 +48,13 @@ char *video_renderer_get_name(int id)
 int video_renderer_get_id(char *name)
 {
         int c;
-        
+
         for (c = 0; c < RENDERER_COUNT; c++)
         {
                 if (!strcmp(sdl_render_drivers[c].sdl_id, name))
                         return c;
         }
-        
+
         return 0;
 }
 
@@ -65,6 +64,7 @@ static int video_renderer_create(void *main_window)
 
         screen_rect.w = screen_rect.h = 2048;
 
+        // SDL_SetHint(SDL_HINT_MAC_OPENGL_SYNC_DISPATCH, "0");
         SDL_SetHint(SDL_HINT_RENDER_DRIVER, sdl_render_drivers[selected_video_renderer].sdl_id);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, video_linear_filtering ? "1" : "0");
 
@@ -75,20 +75,20 @@ static int video_renderer_create(void *main_window)
         {
                 char message[200];
                 sprintf(message,
-                                "SDL window could not be created! Error: %s\n",
-                                SDL_GetError());
+                        "SDL window could not be created! Error: %s\n",
+                        SDL_GetError());
 #if WIN32
                 MessageBox(main_window, message, "SDL Error", MB_OK);
 #else
                 printf("%s", message);
-#endif                
+#endif
                 return SDL_FALSE;
         }
 
         rpclog("create texture\n");
         texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                        SDL_TEXTUREACCESS_STREAMING,
-                        screen_rect.w, screen_rect.h);
+                                    SDL_TEXTUREACCESS_STREAMING,
+                                    screen_rect.w, screen_rect.h);
 
         rpclog("video initialized\n");
         return SDL_TRUE;
@@ -97,7 +97,7 @@ static int video_renderer_create(void *main_window)
 int video_renderer_init(void *main_window)
 {
         int c, d;
-        
+
         rpclog("video_renderer_init()\n");
 
         for (c = 0; c < SDL_GetNumRenderDrivers(); c++)
@@ -111,30 +111,35 @@ int video_renderer_init(void *main_window)
                                 sdl_render_drivers[d].available = 1;
                 }
         }
-        
-        rpclog("create SDL window\n");
+
+        rpclog("Create SDL window\n");
+        rpclog("Arculator 2.1 - %s\n", sdl_render_drivers[selected_video_renderer].sdl_id);
+        SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+        // SDL_SetHint(SDL_HINT_MAC_OPENGL_SYNC_DISPATCH, "0");
         if (main_window == NULL)
         {
-                sdl_main_window = SDL_CreateWindow(
-                        "Arculator",
-                        SDL_WINDOWPOS_CENTERED,
-                        SDL_WINDOWPOS_CENTERED,
-                        768,
-                        576,
-                        0
-                );
+                rpclog("if main window is NULL\n");
+                // rpclog("Trying to create window\n");
+                // sdl_main_window = SDL_CreateWindow(
+                //     "Arculator",
+                //     SDL_WINDOWPOS_CENTERED,
+                //     SDL_WINDOWPOS_CENTERED,
+                //     768,
+                //     576,
+                //     0);
         }
         else
         {
-                sdl_main_window = SDL_CreateWindowFrom(main_window);
+                rpclog("Trying to create window FROM\n");
+                SDL_CreateWindowFrom(main_window);
         }
 
         if (!sdl_main_window)
         {
                 char message[200];
                 sprintf(message,
-                                "SDL_CreateWindowFrom could not be created! Error: %s\n",
-                                SDL_GetError());
+                        "SDL_CreateWindowFrom could not be created! Error: %s\n",
+                        SDL_GetError());
 #if WIN32
                 MessageBox(main_window, message, "SDL Error", MB_OK);
 #else
@@ -178,12 +183,12 @@ void video_renderer_close()
 /*Update display texture from memory bitmap src.*/
 void video_renderer_update(BITMAP *src, int src_x, int src_y, int dest_x, int dest_y, int w, int h)
 {
-        LOG_VIDEO_FRAMES("video_renderer_update: src=%i,%i dest=%i,%i size=%i,%i\n", src_x,src_y, dest_x,dest_y, w,h);
+        LOG_VIDEO_FRAMES("video_renderer_update: src=%i,%i dest=%i,%i size=%i,%i\n", src_x, src_y, dest_x, dest_y, w, h);
         texture_rect.x = dest_x;
         texture_rect.y = dest_y;
         texture_rect.w = w;
         texture_rect.h = h;
-        
+
         if (src_x < 0)
         {
                 texture_rect.w += src_x;
@@ -203,7 +208,7 @@ void video_renderer_update(BITMAP *src, int src_x, int src_y, int dest_x, int de
                 return;
         if ((src_y + texture_rect.h) > 2047)
                 texture_rect.h = 2048 - src_y;
-        
+
         if (texture_rect.x < 0)
         {
                 texture_rect.w += texture_rect.x;
@@ -226,11 +231,11 @@ void video_renderer_update(BITMAP *src, int src_x, int src_y, int dest_x, int de
 
         if (texture_rect.w <= 0 || texture_rect.h <= 0)
                 return;
-                
+
         LOG_VIDEO_FRAMES("SDL_UpdateTexture (%d, %d)+(%d, %d) from src (%d, %d) w %d\n",
-                texture_rect.x, texture_rect.y,
-                texture_rect.w, texture_rect.h,
-                src_x, src_y, src->w);
+                         texture_rect.x, texture_rect.y,
+                         texture_rect.w, texture_rect.h,
+                         src_x, src_y, src->w);
         SDL_UpdateTexture(texture, &texture_rect, &((uint32_t *)src->dat)[src_y * src->w + src_x], src->w * 4);
 }
 
@@ -240,7 +245,7 @@ static void sdl_scale(int scale, SDL_Rect src, SDL_Rect *dst, int w, int h)
         int ratio_w, ratio_h;
         switch (scale)
         {
-                case FULLSCR_SCALE_43:
+        case FULLSCR_SCALE_43:
                 t = 0;
                 b = src.h;
                 l = (src.w / 2) - ((src.h * 4) / (3 * 2));
@@ -253,7 +258,7 @@ static void sdl_scale(int scale, SDL_Rect src, SDL_Rect *dst, int w, int h)
                         b = (src.h / 2) + ((src.w * 3) / (4 * 2));
                 }
                 break;
-                case FULLSCR_SCALE_SQ:
+        case FULLSCR_SCALE_SQ:
                 t = 0;
                 b = src.h;
                 l = (src.w / 2) - ((src.h * w) / (h * 2));
@@ -266,7 +271,7 @@ static void sdl_scale(int scale, SDL_Rect src, SDL_Rect *dst, int w, int h)
                         b = (src.h / 2) + ((src.w * h) / (w * 2));
                 }
                 break;
-                case FULLSCR_SCALE_INT:
+        case FULLSCR_SCALE_INT:
                 ratio_w = src.w / w;
                 ratio_h = src.h / h;
                 if (ratio_h < ratio_w)
@@ -276,8 +281,8 @@ static void sdl_scale(int scale, SDL_Rect src, SDL_Rect *dst, int w, int h)
                 t = (src.h / 2) - ((h * ratio_w) / 2);
                 b = (src.h / 2) + ((h * ratio_w) / 2);
                 break;
-                case FULLSCR_SCALE_FULL:
-                default:
+        case FULLSCR_SCALE_FULL:
+        default:
                 l = 0;
                 t = 0;
                 r = src.w;
@@ -310,15 +315,15 @@ void video_renderer_present(int src_x, int src_y, int src_w, int src_h, int dbls
         if (fullscreen)
         {
                 if (dblscan)
-                        sdl_scale(video_fullscreen_scale, window_rect, &window_rect, texture_rect.w, texture_rect.h*2);
+                        sdl_scale(video_fullscreen_scale, window_rect, &window_rect, texture_rect.w, texture_rect.h * 2);
                 else
                         sdl_scale(video_fullscreen_scale, window_rect, &window_rect, texture_rect.w, texture_rect.h);
         }
-        
+
         /*Clear the renderer backbuffer*/
         SDL_RenderClear(renderer);
-/*rpclog("Present %i,%i %i,%i -> %i,%i %i,%i\n", texture_rect.x, texture_rect.y, texture_rect.w, texture_rect.h,
-                                                window_rect.x, window_rect.y, window_rect.w, window_rect.h);*/
+        /*rpclog("Present %i,%i %i,%i -> %i,%i %i,%i\n", texture_rect.x, texture_rect.y, texture_rect.w, texture_rect.h,
+                                                        window_rect.x, window_rect.y, window_rect.w, window_rect.h);*/
         /*Copy texture to backbuffer*/
         SDL_RenderCopy(renderer, texture, &texture_rect, &window_rect);
         /*Present backbuffer to window*/
