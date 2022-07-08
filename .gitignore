@@ -3,6 +3,7 @@
 .dirstamp
 .deps
 cmos/*.bin
+configs/*.cfg
 config.log
 config.status
 wx
@@ -12,3 +13,6 @@ arc.cfg
 arclog.txt
 aka31_log.txt
 ROM
+
+**/Makefile
+**/Makefile.in
