@@ -55,93 +55,95 @@
   There are two RiscOS 3.1 sets as configuring for 82c711 corrupts ADFS CMOS space
   used for WD1772 - the effect is that WD1772 will hang more often if they are the
   same set.*/
-int romset=2;
+int romset = 2;
 
 void fdiclose();
-int firstfull=1;
-int memsize=4096;
-static float inssecf;  /*Millions of instructions executed in the last second*/
-int inssec;            /*Speed ratio percentage (100% = realtime emulation), updated by updateins()*/
-int updatemips;        /*1 if MIPS counter has not been updated since last updateins() call*/
-static int frameco=0;  /*Number of 1/100 second executions (arm_run() calls) since last updateins()*/
+int firstfull = 1;
+int memsize = 4096;
+static float inssecf;   /*Millions of instructions executed in the last second*/
+int inssec;             /*Speed ratio percentage (100% = realtime emulation), updated by updateins()*/
+int updatemips;         /*1 if MIPS counter has not been updated since last updateins() call*/
+static int frameco = 0; /*Number of 1/100 second executions (arm_run() calls) since last updateins()*/
 char exname[512];
 
-int jint,jtotal;
+int jint, jtotal;
 
 void updateins()
 {
-        inssecf=(float)inscount/1000000;
-        inscount=0;
-        inssec=frameco;
-        frameco=0;
-        jtotal=jint;
-        jint=0;
-        updatemips=1;
+        inssecf = (float)inscount / 1000000;
+        inscount = 0;
+        inssec = frameco;
+        frameco = 0;
+        jtotal = jint;
+        jint = 0;
+        updatemips = 1;
 }
 
 FILE *rlog = NULL;
 void rpclog(const char *format, ...)
 {
 #ifdef DEBUG_LOG
-   char buf[1024];
+        char buf[1024];
 
-   if (!rlog)
-   {
-           rlog=fopen("arclog.txt","wt");
-           if (!rlog)
-           {
-                   perror("fopen");
-                   exit(-1);
-           }
-   }
+        if (!rlog)
+        {
+                rlog = fopen("arclog.txt", "wt");
+                if (!rlog)
+                {
+                        perror("fopen");
+                        exit(-1);
+                }
+        }
 
-   va_list ap;
-   va_start(ap, format);
-   vsprintf(buf, format, ap);
-   va_end(ap);
+        va_list ap;
+        va_start(ap, format);
+        vsprintf(buf, format, ap);
+        va_end(ap);
 
-   fprintf(stderr, "[%08i]: %s", (uint32_t)(tsc >> 32), buf);
-   fprintf(rlog, "[%08i]: %s", (uint32_t)(tsc >> 32), buf);
+        fprintf(stderr, "[%08i]: %s", (uint32_t)(tsc >> 32), buf);
+        fprintf(rlog, "[%08i]: %s", (uint32_t)(tsc >> 32), buf);
 
-   fflush(rlog);
+        fflush(rlog);
 #endif
 }
 
 void fatal(const char *format, ...)
 {
-   char buf[1024];
+        char buf[1024];
 
-   if (!rlog) rlog=fopen("arclog.txt","wt");
+        if (!rlog)
+                rlog = fopen("arclog.txt", "wt");
 
-   va_list ap;
-   va_start(ap, format);
-   vsprintf(buf, format, ap);
-   va_end(ap);
-   fputs(buf,rlog);
-   fflush(rlog);
+        va_list ap;
+        va_start(ap, format);
+        vsprintf(buf, format, ap);
+        va_end(ap);
+        fputs(buf, rlog);
+        fflush(rlog);
 
-   fprintf(stderr, "%s", buf);
+        fprintf(stderr, "%s", buf);
 
-   dumpregs();
-   exit(-1);
+        dumpregs();
+        exit(-1);
 }
 void error(const char *format, ...)
 {
-   char buf[1024];
+        char buf[1024];
 
-   if (!rlog) rlog=fopen("arclog.txt","wt");
+        if (!rlog)
+                rlog = fopen("arclog.txt", "wt");
 
-   va_list ap;
-   va_start(ap, format);
-   vsprintf(buf, format, ap);
-   va_end(ap);
-   fputs(buf,rlog);
-   fflush(rlog);
+        va_list ap;
+        va_start(ap, format);
+        vsprintf(buf, format, ap);
+        va_end(ap);
+        fputs(buf, rlog);
+        fflush(rlog);
 
-   fprintf(stderr, "%s", buf);
+        fprintf(stderr, "%s", buf);
 
-   dumpregs();
-   exit(-1);
+        dumpregs();
+        exit(-1);
 }
 
 void arc_set_cpu(int cpu, int memc);
@@ -153,7 +155,7 @@ int arc_init()
         int c;
 
         loadconfig();
-        
+
         initvid();
 
         arc_set_cpu(arm_cpu_type, memc_type);
@@ -163,14 +165,14 @@ int arc_init()
 #endif
         hostfs_init();
         initmem(memsize);
-        
+
         if (loadrom())
                 return -1;
         rom_load_5th_column();
         rom_load_arc_support_extrom();
 
         resizemem(memsize);
-        
+
         initmemc();
         resetarm();
         cmos_load();
@@ -180,12 +182,12 @@ int arc_init()
         resetmouse();
         sound_init();
 
-        fullscreen=0;
-        //mousehack=0;
+        fullscreen = 0;
+        // mousehack=0;
         reinitvideo();
-        if (soundena) 
-           al_init();
-//        joystick_init();
+        if (soundena)
+                al_init();
+        //        joystick_init();
 
         c82c711_init();
         disc_init();
@@ -201,14 +203,15 @@ int arc_init()
         wd1770_reset();
         c82c711_fdc_init();
 
-        for (c=0;c<4;c++)
+        for (c = 0; c < 4; c++)
         {
-                sprintf(s,"disc_name_%i",c);
-                p = (char *)config_get_string(CFG_MACHINE, NULL,s,NULL);
-                if (p) {
-                   disc_close(c);
-                   strcpy(discname[c], p);
-                   disc_load(c, discname[c]);
+                sprintf(s, "disc_name_%i", c);
+                p = (char *)config_get_string(CFG_MACHINE, NULL, s, NULL);
+                if (p)
+                {
+                        disc_close(c);
+                        strcpy(discname[c], p);
+                        disc_load(c, discname[c]);
                 }
                 ioc_discchange(c);
         }
@@ -224,7 +227,8 @@ int arc_init()
         ioeb_init();
         if (machine_type == MACHINE_TYPE_A4)
                 lc_init();
-        
+
+        rpclog("arc_init() done\n");
         return 0;
 }
 
@@ -245,7 +249,7 @@ void arc_reset()
         cmos_load();
         resizemem(memsize);
         resetarm();
-        memset(ram,0,memsize*1024);
+        memset(ram, 0, memsize * 1024);
         resetmouse();
         ioc_reset();
         vidc_reset();
@@ -273,12 +277,11 @@ static struct
         int mem_speed;
         int is_memc1;
 } arc_memcs[] =
-{
-        {"MEMC1",             8, 1},
-        {"MEMC1A at 8 MHz",   8, 0},
+    {
+        {"MEMC1", 8, 1},
+        {"MEMC1A at 8 MHz", 8, 0},
         {"MEMC1A at 12 MHz", 12, 0},
-        {"MEMC1A at 16 MHz", 16, 0}
-};
+        {"MEMC1A at 16 MHz", 16, 0}};
 
 static struct
 {
@@ -287,9 +290,9 @@ static struct
         int has_swp;
         int has_cp15;
 } arc_cpus[] =
-{
-        {"ARM2",          0,  0, 0},
-        {"ARM250",        0,  1, 0},
+    {
+        {"ARM2", 0, 0, 0},
+        {"ARM250", 0, 1, 0},
         {"ARM3 (20 MHz)", 20, 1, 1},
         {"ARM3 (25 MHz)", 25, 1, 1},
         {"ARM3 (26 MHz)", 26, 1, 1},
@@ -309,8 +312,8 @@ void arc_set_cpu(int cpu, int memc)
                 arm_cpu_speed = arc_cpus[cpu].cpu_speed;
         else
                 arm_cpu_speed = arm_mem_speed;
-        arm_has_swp   = arc_cpus[cpu].has_swp;
-        arm_has_cp15  = arc_cpus[cpu].has_cp15;
+        arm_has_swp = arc_cpus[cpu].has_swp;
+        arm_has_cp15 = arc_cpus[cpu].has_cp15;
         ref8m_period = (arm_cpu_speed * 1024) / 8;
         speed_mhz = arm_cpu_speed;
         mem_updatetimings();
@@ -319,12 +322,15 @@ void arc_set_cpu(int cpu, int memc)
 static int ddnoise_frames = 0;
 void arc_run()
 {
+        // rpclog("arc_run\n");
         LOG_EVENT_LOOP("arc_run()\n");
         execarm((speed_mhz * 1000000) / 100);
+        rpclog("did arc_run -- execarm\n");
         joystick_poll_host();
         mouse_poll_host();
         keyboard_poll_host();
-        if (mousehack) doosmouse();
+        if (mousehack)
+                doosmouse();
         frameco++;
         ddnoise_frames++;
         if (ddnoise_frames == 10)
@@ -339,13 +345,14 @@ void arc_run()
                         cmos_save();
         }
         LOG_EVENT_LOOP("END arc_run()\n");
+        // rpclog("arc_run END\n");
 }
 
 void arc_close()
 {
-//        output=1;
-//        execarm(16000);
-//        vidc_dumppal();
+        //        output=1;
+        //        execarm(16000);
+        //        vidc_dumppal();
         dumpregs();
         cmos_save();
         saveconfig();
