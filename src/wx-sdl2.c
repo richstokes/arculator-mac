@@ -50,23 +50,76 @@ static SDL_mutex *main_thread_mutex = NULL;
 
 static int arc_main_thread(void *p)
 {
+        // This is actually a background thread
         rpclog("Arculator startup\n");
-
-        arc_init();
 
         if (!video_renderer_init(NULL))
         {
                 fatal("Video renderer init failed");
+                // rpclog("Video renderer init failed, trying to continue\n");
         }
         input_init();
 
-        arc_update_menu();
+        if (quited)
+        {
+                rpclog("SHUTTING DOWN\n");
 
+                arc_close();
+
+                input_close();
+
+                video_renderer_close();
+
+                SDL_DestroyWindow(sdl_main_window);
+                SDL_Quit();
+        }
+
+        return 0;
+}
+
+static SDL_Thread *main_thread;
+void arc_start_main_thread(void *wx_window, void *wx_menu)
+{
+        // So this is actually the "main thread?"
+        // quited = 0;
+        pause_main_thread = 0;
+        main_thread_mutex = SDL_CreateMutex();
+        arc_init();
+
+        // Try calling here instead of video_sdl2.c
+        rpclog("Trying to create window\n");
+        sdl_main_window = SDL_CreateWindow(
+            "Arculator",
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            768,
+            576,
+            0);
+
+        if (!video_renderer_init(NULL))
+        {
+                fatal("Video renderer init failed");
+                // rpclog("Video renderer init failed, trying to continue\n");
+        }
+
+        input_init();
+
+        rpclog("Trying menu\n");
+
+        // arc_popup_menu();
+
+        rpclog("arc_update_menu()\n");
+        arc_update_menu();
+        rpclog("arc_update_menu() done!\n");
+
+        rpclog("main_sdl_loop_thread\n");
+        // Try adding main event loop here instead of secondary thread
         struct timeval tp;
         time_t last_seconds = 0;
 
         while (!quited)
         {
+                rpclog("!MAIN LOOP!\n");
                 LOG_EVENT_LOOP("event loop\n");
                 if (gettimeofday(&tp, NULL) == -1)
                 {
@@ -83,16 +136,23 @@ static int arc_main_thread(void *p)
                         updateins();
                         last_seconds = tp.tv_sec;
                 }
-                SDL_Event e;
+
+                rpclog("about to check SDL_event \n");
+
+                SDL_Event e = {0};
+
                 while (SDL_PollEvent(&e) != 0)
                 {
+                        rpclog("Running SDL_PollEvent()\n");
                         if (e.type == SDL_QUIT)
                         {
+                                rpclog("SDL_QUIT\n");
                                 //                                quited = 1;
                                 arc_stop_emulation();
                         }
                         if (e.type == SDL_MOUSEBUTTONUP)
                         {
+                                rpclog("SDL_MOUSEBUTTONUP\n");
                                 if (e.button.button == SDL_BUTTON_LEFT && !mousecapture)
                                 {
                                         rpclog("Mouse click -- enabling mouse capture\n");
@@ -105,6 +165,7 @@ static int arc_main_thread(void *p)
                         }
                         if (e.type == SDL_WINDOWEVENT)
                         {
+                                rpclog("SDL_WINDOWEVENT\n");
                                 switch (e.window.event)
                                 {
                                 case SDL_WINDOWEVENT_FOCUS_LOST:
@@ -119,16 +180,21 @@ static int arc_main_thread(void *p)
                                         break;
                                 }
                         }
+                        rpclog("end of if e.type");
+
                         if ((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END] && !fullscreen && mousecapture)
                         {
                                 rpclog("CTRL-END pressed -- disabling mouse capture\n");
                                 sdl_disable_mouse_capture();
                         }
+                        rpclog("got to end of event type ifs \n");
                 }
+                rpclog("end of while SDL_PollEvent \n");
 
                 /*Resize window to match screen mode*/
                 if (!fullscreen && win_doresize)
                 {
+                        rpclog("Resizing window\n");
                         SDL_Rect rect;
 
                         win_doresize = 0;
@@ -148,6 +214,7 @@ static int arc_main_thread(void *p)
                 if (win_dofullscreen ||
                     (key[KEY_RWIN] && key[KEY_ENTER] && !fullscreen))
                 {
+                        rpclog("Toggling fullscreen\n");
                         win_dofullscreen = 0;
 
                         SDL_RaiseWindow(sdl_main_window);
@@ -161,6 +228,7 @@ static int arc_main_thread(void *p)
                                            /*Toggle with RWIN-Enter*/
                                            || (key[KEY_RWIN] && key[KEY_ENTER])))
                 {
+                        rpclog("Exiting fullscreen\n");
                         SDL_SetWindowFullscreen(sdl_main_window, 0);
                         sdl_disable_mouse_capture();
 
@@ -173,6 +241,7 @@ static int arc_main_thread(void *p)
 
                 if (win_renderer_reset)
                 {
+                        rpclog("Resetting renderer\n");
                         win_renderer_reset = 0;
 
                         if (!video_renderer_reinit(NULL))
@@ -180,12 +249,20 @@ static int arc_main_thread(void *p)
                 }
 
                 // Run for 10 ms of processor time
-                SDL_LockMutex(main_thread_mutex);
+                // rpclog("about to lock mutex\n");
+                // SDL_LockMutex(main_thread_mutex);
+                // rpclog("locked mutex\n");
                 if (!pause_main_thread)
+                {
+                        rpclog("pausing main thread\n");
                         arc_run();
-                SDL_UnlockMutex(main_thread_mutex);
+                        // SDL_CreateThread(arc_run, "arc_run Thread", (void *)NULL);
+                }
+                // SDL_UnlockMutex(main_thread_mutex);
+                // rpclog("unlocked mutex\n");
 
                 // Sleep to make it up to 10 ms of real time
+                rpclog("Checking timers\n");
                 static Uint32 last_timer_ticks = 0;
                 static int timer_offset = 0;
                 Uint32 current_timer_ticks = SDL_GetTicks();
@@ -195,13 +272,16 @@ static int arc_main_thread(void *p)
                 // rpclog("timer_offset now %d; %d ticks since last; delaying %d\n", timer_offset, ticks_since_last, 10 - ticks_since_last);
                 if (timer_offset > 100 || timer_offset < -100)
                 {
+                        rpclog("timer_offset out of range %d\n", timer_offset);
                         timer_offset = 0;
                 }
                 else if (timer_offset > 0)
                 {
+                        rpclog("Delaying %d\n", timer_offset);
                         SDL_Delay(timer_offset);
                 }
 
+                rpclog("about to updatemips\n");
                 if (updatemips)
                 {
                         char s[80];
@@ -213,30 +293,21 @@ static int arc_main_thread(void *p)
                         updatemips = 0;
                 }
         }
-        rpclog("SHUTTING DOWN\n");
 
-        arc_close();
-
-        input_close();
-
-        video_renderer_close();
-
-        SDL_DestroyWindow(sdl_main_window);
-
-        return 0;
-}
-
-static SDL_Thread *main_thread;
-void arc_start_main_thread(void *wx_window, void *wx_menu)
-{
-        quited = 0;
-        pause_main_thread = 0;
-        main_thread_mutex = SDL_CreateMutex();
-        // SDL create main thread
-        // main_thread = SDL_CreateThread(arc_main_thread, "Main Thread", (void *)NULL);
-        arc_main_thread(NULL);
-        // SDL thread for macos
-        // Create SDL thread via dispatch_queue
+        // Original junk
+        //  main_thread = NULL;
+        //  arc_main_thread(NULL);
+        //  SDL thread for macos
+        //  Create SDL thread via dispatch_queue
+        //  if (NULL == main_thread)
+        //  {
+        //          rpclog("SDL_CreateThread failed: %s\n", SDL_GetError());
+        //  }
+        //  else
+        //  {
+        //          SDL_WaitThread(main_thread, &threadReturnValue);
+        //          rpclog("Thread returned value: %d\n", threadReturnValue);
+        //  }
 }
 
 void arc_stop_main_thread()
