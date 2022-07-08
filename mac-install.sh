@@ -2,6 +2,12 @@
 set -e
 ROMFILE='../../../riscos.rom' # PATH to RISOCS ROM file
 
+# Check if running on MacOS
+if [ "$(uname)" != "Darwin" ]; then
+    echo "This script must be run on a MacOS machine"
+    exit 1
+fi
+
 # Check for or install homebrew
 if test ! $(which brew); then
   echo "Installing homebrew.."
@@ -16,20 +22,16 @@ export LDFLAGS="-lX11"
 # export C_INCLUDE_PATH=/usr/local/include/wx-3.1
 # export CFLAGS="-I/usr/local/include"
 # export CXXFLAGS="-I/usr/local/include -I/usr/local/include/wx-3.1"
-echo ""
-echo "Library path=$LIBRARY_PATH"
-echo ""
 
 # check if wxWidgets directory already exists
-if [ ! -d "/usr/local/include/wx-3.1" ]; then
-    # Install wxwidgets from source (the brew version doesn't seem to work)
-    brew uninstall wxwidgets || true
-    wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.7/wxWidgets-3.1.7.tar.bz2
-    tar -xjf wxWidgets-3.1.7.tar.bz2 > /dev/null
-    cd wxWidgets-3.1.7
+if [ ! -d "/usr/local/include/wx-3.2" ]; then
+    brew uninstall wxwidgets || true # Install wxwidgets from source (the brew version doesn't seem to work)
+    wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.0/wxWidgets-3.2.0.tar.bz2
+    tar -xjf wxWidgets-3.2.0.tar.bz2 > /dev/null
+    cd wxWidgets-3.2.0
     ./configure
     echo "Building wxwidgets, this may take a while.."
-    make -j8 > /dev/null
+    make -j$(nproc) > /dev/null
     echo ""
     echo "Installing wxWidgets, you may be prompted for your password.."
     sudo make install
@@ -46,7 +48,6 @@ else
     ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
 fi
 
-
 autoreconf -i #Fixes "configure: error: cannot find install-sh, install.sh"
 
 echo "Building arculator.."
@@ -59,4 +60,14 @@ make clean || true
 make -j$(nproc)
 
 # Copy your RiscOS rom to the arculator ROMs folder
-cp $ROMFILE roms/riscos310/ROM
+# Check ROMFILE exists
+
+if [ -f "$ROMFILE" ]; then
+    echo "Copying $ROMFILE to arculator/roms dir.."
+    cp $ROMFILE roms/riscos310/ROM
+else
+    echo "ROMFILE $ROMFILE not found.."
+fi
+
+echo ""
+echo "Build completed!\n Use ./arculator to run"
