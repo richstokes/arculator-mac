@@ -51,8 +51,12 @@ autoreconf -i #Fixes "configure: error: cannot find install-sh, install.sh"
 
 echo "Building arculator.."
 make clean || true
-./configure --enable-release-build
-make -j8
+
+# Swap the two lines below if you want to use the debug version
+# ./configure --enable-release-build
+./configure --enable-debug
+
+make -j$(nproc)
 
 # Copy your RiscOS rom to the arculator ROMs folder
 cp $ROMFILE roms/riscos310/ROM
