@@ -87,7 +87,7 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
         arc_init();
 
         // Try calling here instead of video_sdl2.c
-        rpclog("Trying to create window\n");
+        rpclog("Attempting to create window\n");
         sdl_main_window = SDL_CreateWindow(
             "Arculator",
             SDL_WINDOWPOS_CENTERED,
@@ -105,21 +105,19 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
         input_init();
 
         rpclog("Trying menu\n");
-
         // arc_popup_menu();
 
-        rpclog("arc_update_menu()\n");
+        // rpclog("arc_update_menu()\n");
         arc_update_menu();
-        rpclog("arc_update_menu() done!\n");
+        // rpclog("arc_update_menu() done!\n");
 
-        rpclog("main_sdl_loop_thread\n");
         // Try adding main event loop here instead of secondary thread
         struct timeval tp;
         time_t last_seconds = 0;
 
         while (!quited)
         {
-                rpclog("!MAIN LOOP!\n");
+                // rpclog("!MAIN LOOP!\n");
                 LOG_EVENT_LOOP("event loop\n");
                 if (gettimeofday(&tp, NULL) == -1)
                 {
@@ -137,13 +135,11 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
                         last_seconds = tp.tv_sec;
                 }
 
-                rpclog("about to check SDL_event \n");
-
                 SDL_Event e = {0};
 
                 while (SDL_PollEvent(&e) != 0)
                 {
-                        rpclog("Running SDL_PollEvent()\n");
+                        // rpclog("Running SDL_PollEvent()\n");
                         if (e.type == SDL_QUIT)
                         {
                                 rpclog("SDL_QUIT\n");
@@ -180,21 +176,20 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
                                         break;
                                 }
                         }
-                        rpclog("end of if e.type");
+                        // rpclog("end of if e.type");
 
                         if ((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END] && !fullscreen && mousecapture)
                         {
                                 rpclog("CTRL-END pressed -- disabling mouse capture\n");
                                 sdl_disable_mouse_capture();
                         }
-                        rpclog("got to end of event type ifs \n");
+                        // rpclog("got to end of event type ifs \n");
                 }
-                rpclog("end of while SDL_PollEvent \n");
+                // rpclog("end of while SDL_PollEvent \n");
 
                 /*Resize window to match screen mode*/
                 if (!fullscreen && win_doresize)
                 {
-                        rpclog("Resizing window\n");
                         SDL_Rect rect;
 
                         win_doresize = 0;
@@ -254,15 +249,12 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
                 // rpclog("locked mutex\n");
                 if (!pause_main_thread)
                 {
-                        rpclog("pausing main thread\n");
                         arc_run();
-                        // SDL_CreateThread(arc_run, "arc_run Thread", (void *)NULL);
                 }
                 // SDL_UnlockMutex(main_thread_mutex);
                 // rpclog("unlocked mutex\n");
 
                 // Sleep to make it up to 10 ms of real time
-                rpclog("Checking timers\n");
                 static Uint32 last_timer_ticks = 0;
                 static int timer_offset = 0;
                 Uint32 current_timer_ticks = SDL_GetTicks();
@@ -272,16 +264,13 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
                 // rpclog("timer_offset now %d; %d ticks since last; delaying %d\n", timer_offset, ticks_since_last, 10 - ticks_since_last);
                 if (timer_offset > 100 || timer_offset < -100)
                 {
-                        rpclog("timer_offset out of range %d\n", timer_offset);
                         timer_offset = 0;
                 }
                 else if (timer_offset > 0)
                 {
-                        rpclog("Delaying %d\n", timer_offset);
                         SDL_Delay(timer_offset);
                 }
 
-                rpclog("about to updatemips\n");
                 if (updatemips)
                 {
                         char s[80];

@@ -28,9 +28,10 @@ if [ ! -d "/usr/local/include/wx-3.2" ]; then
     brew uninstall wxwidgets || true # Install wxwidgets from source (the brew version doesn't seem to work)
     wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.0/wxWidgets-3.2.0.tar.bz2
     tar -xjf wxWidgets-3.2.0.tar.bz2 > /dev/null
-    cd wxWidgets-3.2.0
-    ./configure
+    cd wxWidgets-3.2.0 > /dev/null
     echo "Building wxwidgets, this may take a while.."
+    sleep 2
+    ./configure
     make -j$(nproc) > /dev/null
     echo ""
     echo "Installing wxWidgets, you may be prompted for your password.."

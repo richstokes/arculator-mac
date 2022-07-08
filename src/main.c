@@ -228,7 +228,6 @@ int arc_init()
         if (machine_type == MACHINE_TYPE_A4)
                 lc_init();
 
-        rpclog("arc_init() done\n");
         return 0;
 }
 
@@ -322,10 +321,8 @@ void arc_set_cpu(int cpu, int memc)
 static int ddnoise_frames = 0;
 void arc_run()
 {
-        // rpclog("arc_run\n");
         LOG_EVENT_LOOP("arc_run()\n");
         execarm((speed_mhz * 1000000) / 100);
-        rpclog("did arc_run -- execarm\n");
         joystick_poll_host();
         mouse_poll_host();
         keyboard_poll_host();
@@ -345,7 +342,6 @@ void arc_run()
                         cmos_save();
         }
         LOG_EVENT_LOOP("END arc_run()\n");
-        // rpclog("arc_run END\n");
 }
 
 void arc_close()

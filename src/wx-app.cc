@@ -24,15 +24,21 @@
 
 extern "C"
 {
-        #include "arc.h"
-        #include "config.h"
-        #include "disc.h"
-        #include "plat_joystick.h"
-        #include "plat_video.h"
-        #include "romload.h"
-        #include "sound.h"
-        #include "video.h"
+#include "arc.h"
+#include "config.h"
+#include "disc.h"
+#include "plat_joystick.h"
+#include "plat_video.h"
+#include "romload.h"
+#include "sound.h"
+#include "video.h"
 }
+
+// MacOS stuff
+#ifdef __APPLE__
+static bool s_macAutoWindowMenu = true;
+static WXHMENU s_macWindowMenuHandle;
+#endif
 
 extern void InitXmlResource();
 
@@ -44,9 +50,9 @@ wxDEFINE_EVENT(WX_WIN_SEND_MESSAGE_EVENT, WinSendMessageEvent);
 #endif
 
 wxBEGIN_EVENT_TABLE(Frame, wxFrame)
-wxEND_EVENT_TABLE()
+    wxEND_EVENT_TABLE()
 
-wxIMPLEMENT_APP_NO_MAIN(App);
+        wxIMPLEMENT_APP_NO_MAIN(App);
 
 App::App()
 {
@@ -55,7 +61,7 @@ App::App()
 
 bool App::OnInit()
 {
-        wxImage::AddHandler( new wxPNGHandler );
+        wxImage::AddHandler(new wxPNGHandler);
         wxXmlResource::Get()->InitAllHandlers();
         InitXmlResource();
 
@@ -67,9 +73,9 @@ bool App::OnInit()
 
         SDL_Init(SDL_INIT_EVERYTHING);
         joystick_init();
-        
+
         frame = new Frame(this, "null frame", wxPoint(500, 500),
-                        wxSize(100, 100));
+                          wxSize(100, 100));
 #ifdef _WIN32
         frame->SetIcon(wxICON(ICON_ACORN));
 #endif
@@ -80,12 +86,43 @@ bool App::OnInit()
 static void *main_frame = NULL;
 static void *main_menu = NULL;
 
-Frame::Frame(App* app, const wxString& title, const wxPoint& pos,
-                const wxSize& size) :
-                wxFrame(NULL, wxID_ANY, title, pos, size, 0)
+Frame::Frame(App *app, const wxString &title, const wxPoint &pos,
+             const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size, 0)
 {
         main_frame = this;
-        
+
+        // Set up MacOS menu bar
+        if (s_macAutoWindowMenu)
+        {
+                this->menu = wxXmlResource::Get()->LoadMenu("main_menu");
+                if (menu)
+                {
+                        wxMenuBar *menubar = new wxMenuBar();
+                        menubar->Append(menu, "&File");
+                        SetMenuBar(menubar);
+
+                        // Append quit to menubar
+                        wxMenu *file = menu;
+                        wxMenuItem *quit = file->FindItemByPosition(file->GetMenuItemCount() - 1);
+                        if (quit)
+                        {
+                                wxMenu *quit_menu = new wxMenu();
+                                quit_menu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
+                                menubar->Append(quit_menu, "&Quit");
+                        }
+                }
+        }
+        else
+        {
+                wxMenuBar *menubar = new wxMenuBar();
+                this->menu = wxXmlResource::Get()->LoadMenu("main_menu");
+                if (menu)
+                {
+                        menubar->Append(menu, "&File");
+                        SetMenuBar(menubar);
+                }
+        }
+
         this->menu = wxXmlResource::Get()->LoadMenu(wxT("main_menu"));
         main_menu = this->menu;
 
@@ -108,7 +145,7 @@ void Frame::Start()
                 Quit(0);
 }
 
-wxMenu* Frame::GetMenu()
+wxMenu *Frame::GetMenu()
 {
         return menu;
 }
@@ -130,70 +167,70 @@ void Frame::OnStopEmulationEvent(wxCommandEvent &event)
 void Frame::UpdateMenu(wxMenu *menu)
 {
         char menuitem[80];
-        wxMenuItem *item = ((wxMenu*)menu)->FindItem(XRCID("IDM_SOUND_ENABLE"));
+        wxMenuItem *item = ((wxMenu *)menu)->FindItem(XRCID("IDM_SOUND_ENABLE"));
         item->Check(soundena);
-        item = ((wxMenu*)menu)->FindItem(XRCID("IDM_SOUND_STEREO"));
+        item = ((wxMenu *)menu)->FindItem(XRCID("IDM_SOUND_STEREO"));
         item->Check(stereo);
         if (sound_filter == 0)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_FILTER_ORIGINAL"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_FILTER_ORIGINAL"));
         else if (sound_filter == 1)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_FILTER_REDUCED"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_FILTER_REDUCED"));
         else if (sound_filter == 2)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_FILTER_MORE_REDUCED"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_FILTER_MORE_REDUCED"));
         item->Check(true);
 
         if (disc_noise_gain == 0)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DISC_NOISE[1]"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DISC_NOISE[1]"));
         else if (disc_noise_gain == -2)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DISC_NOISE[2]"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DISC_NOISE[2]"));
         else if (disc_noise_gain == -4)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DISC_NOISE[3]"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DISC_NOISE[3]"));
         else if (disc_noise_gain == -6)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DISC_NOISE[4]"));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DISC_NOISE[4]"));
         else
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DISC_NOISE[0]"));
-        item->Check(true);
-        
-        if (dblscan)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_BLIT_SCALE"));
-        else
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_BLIT_SCAN"));
-        item->Check(true);
-        if (display_mode == DISPLAY_MODE_NO_BORDERS)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_NO_BORDERS"));
-        else if (display_mode == DISPLAY_MODE_NATIVE_BORDERS)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_NATIVE_BORDERS"));
-        else
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_TV"));
-        item->Check(true);
-        if (video_fullscreen_scale == FULLSCR_SCALE_FULL)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_FS_FULL"));
-        else if (video_fullscreen_scale == FULLSCR_SCALE_43)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_FS_43"));
-        else if (video_fullscreen_scale == FULLSCR_SCALE_SQ)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_FS_SQ"));
-        else if (video_fullscreen_scale == FULLSCR_SCALE_INT)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_FS_INT"));
-        item->Check(true);
-        if (video_linear_filtering)
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_SCALE_LINEAR"));
-        else
-                item = ((wxMenu*)menu)->FindItem(XRCID("IDM_VIDEO_SCALE_NEAREST"));
-        item->Check(true);
-        sprintf(menuitem, "IDM_VIDEO_SCALE[%d]", video_scale);
-        item = ((wxMenu*)menu)->FindItem(XRCID(menuitem));
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DISC_NOISE[0]"));
         item->Check(true);
 
-        item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DRIVER_AUTO"));
+        if (dblscan)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_BLIT_SCALE"));
+        else
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_BLIT_SCAN"));
+        item->Check(true);
+        if (display_mode == DISPLAY_MODE_NO_BORDERS)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_NO_BORDERS"));
+        else if (display_mode == DISPLAY_MODE_NATIVE_BORDERS)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_NATIVE_BORDERS"));
+        else
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_TV"));
+        item->Check(true);
+        if (video_fullscreen_scale == FULLSCR_SCALE_FULL)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_FS_FULL"));
+        else if (video_fullscreen_scale == FULLSCR_SCALE_43)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_FS_43"));
+        else if (video_fullscreen_scale == FULLSCR_SCALE_SQ)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_FS_SQ"));
+        else if (video_fullscreen_scale == FULLSCR_SCALE_INT)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_FS_INT"));
+        item->Check(true);
+        if (video_linear_filtering)
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_SCALE_LINEAR"));
+        else
+                item = ((wxMenu *)menu)->FindItem(XRCID("IDM_VIDEO_SCALE_NEAREST"));
+        item->Check(true);
+        sprintf(menuitem, "IDM_VIDEO_SCALE[%d]", video_scale);
+        item = ((wxMenu *)menu)->FindItem(XRCID(menuitem));
+        item->Check(true);
+
+        item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DRIVER_AUTO"));
         item->Enable(video_renderer_available(RENDERER_AUTO) ? true : false);
         item->Check((selected_video_renderer == RENDERER_AUTO) ? true : false);
-        item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DRIVER_DIRECT3D"));
+        item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DRIVER_DIRECT3D"));
         item->Enable(video_renderer_available(RENDERER_DIRECT3D) ? true : false);
         item->Check((selected_video_renderer == RENDERER_DIRECT3D) ? true : false);
-        item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DRIVER_OPENGL"));
+        item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DRIVER_OPENGL"));
         item->Enable(video_renderer_available(RENDERER_OPENGL) ? true : false);
         item->Check((selected_video_renderer == RENDERER_OPENGL) ? true : false);
-        item = ((wxMenu*)menu)->FindItem(XRCID("IDM_DRIVER_SOFTWARE"));
+        item = ((wxMenu *)menu)->FindItem(XRCID("IDM_DRIVER_SOFTWARE"));
         item->Enable(video_renderer_available(RENDERER_SOFTWARE) ? true : false);
         item->Check((selected_video_renderer == RENDERER_SOFTWARE) ? true : false);
 }
@@ -204,7 +241,7 @@ void Frame::OnPopupMenuEvent(PopupMenuEvent &event)
         wxMenu *menu = event.GetMenu();
 
         UpdateMenu(menu);
-        
+
         window->PopupMenu(menu);
 }
 
@@ -213,8 +250,8 @@ void Frame::ChangeDisc(int drive)
         wxString old_fn(discname[drive]);
 
         wxFileDialog dlg(NULL, "Select a disc image", "", old_fn,
-                        "All disc images|*.adf;*.img;*.fdi;*.apd;*.hfe|FDI Disc Image|*.fdi|APD Disc Image|*.apd|ADFS Disc Image|*.adf|DOS Disc Image|*.img|HFE Disc Image|*.hfe|All Files|*.*",
-                        wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+                         "All disc images|*.adf;*.img;*.fdi;*.apd;*.hfe|FDI Disc Image|*.fdi|APD Disc Image|*.apd|ADFS Disc Image|*.adf|DOS Disc Image|*.img|HFE Disc Image|*.hfe|All Files|*.*",
+                         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
         if (dlg.ShowModal() == wxID_OK)
         {
@@ -278,7 +315,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() >= XRCID("IDM_DISC_NOISE[0]") && event.GetId() <= XRCID("IDM_DISC_NOISE[4]"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 if (event.GetId() == XRCID("IDM_DISC_NOISE[0]"))
@@ -290,26 +327,26 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         {
                 soundena ^= 1;
 
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(soundena);
         }
         else if (event.GetId() == XRCID("IDM_SOUND_STEREO"))
         {
                 stereo ^= 1;
 
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(stereo);
         }
         else if (event.GetId() >= XRCID("IDM_SOUND_GAIN[0]") && event.GetId() <= XRCID("IDM_SOUND_GAIN[9]"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 sound_gain = 2 * (event.GetId() - XRCID("IDM_SOUND_GAIN[0]"));
         }
         else if (event.GetId() == XRCID("IDM_FILTER_ORIGINAL"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 sound_filter = 0;
@@ -317,7 +354,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_FILTER_REDUCED"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 sound_filter = 1;
@@ -325,9 +362,9 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_FILTER_MORE_REDUCED"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
-                
+
                 sound_filter = 2;
                 sound_update_filter();
         }
@@ -342,7 +379,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
                 if (firstfull)
                 {
                         firstfull = 0;
-                        
+
                         arc_pause_main_thread();
                         wxMessageBox("Use CTRL + END to return to windowed mode", "Arculator", wxOK | wxCENTRE | wxSTAY_ON_TOP);
                         arc_resume_main_thread();
@@ -351,28 +388,28 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_NO_BORDERS"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
-                
+
                 arc_set_display_mode(DISPLAY_MODE_NO_BORDERS);
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_NATIVE_BORDERS"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
-                
+
                 arc_set_display_mode(DISPLAY_MODE_NATIVE_BORDERS);
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_TV"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 arc_set_display_mode(DISPLAY_MODE_TV);
         }
         else if (event.GetId() == XRCID("IDM_DRIVER_AUTO"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 selected_video_renderer = RENDERER_AUTO;
@@ -380,7 +417,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_DRIVER_DIRECT3D"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 selected_video_renderer = RENDERER_DIRECT3D;
@@ -388,7 +425,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_DRIVER_OPENGL"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 selected_video_renderer = RENDERER_OPENGL;
@@ -396,7 +433,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_DRIVER_SOFTWARE"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 selected_video_renderer = RENDERER_SOFTWARE;
@@ -404,7 +441,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_SCALE_NEAREST"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_linear_filtering = 0;
@@ -412,7 +449,7 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_SCALE_LINEAR"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_linear_filtering = 1;
@@ -420,49 +457,49 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
         }
         else if (event.GetId() >= XRCID("IDM_VIDEO_SCALE[0]") && event.GetId() <= XRCID("IDM_VIDEO_SCALE[7]"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_scale = event.GetId() - XRCID("IDM_VIDEO_SCALE[0]");
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_FS_FULL"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_fullscreen_scale = FULLSCR_SCALE_FULL;
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_FS_43"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_fullscreen_scale = FULLSCR_SCALE_43;
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_FS_SQ"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 video_fullscreen_scale = FULLSCR_SCALE_SQ;
         }
         else if (event.GetId() == XRCID("IDM_VIDEO_FS_INT"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
-                
+
                 video_fullscreen_scale = FULLSCR_SCALE_INT;
         }
         else if (event.GetId() == XRCID("IDM_BLIT_SCAN"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
-                
+
                 arc_set_dblscan(0);
         }
         else if (event.GetId() == XRCID("IDM_BLIT_SCALE"))
         {
-                wxMenuItem *item = ((wxMenu*)menu)->FindItem(event.GetId());
+                wxMenuItem *item = ((wxMenu *)menu)->FindItem(event.GetId());
                 item->Check(true);
 
                 arc_set_dblscan(1);
@@ -471,9 +508,9 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
 
 extern "C" void arc_stop_emulation()
 {
-        wxCommandEvent* event = new wxCommandEvent(WX_STOP_EMULATION_EVENT, wxID_ANY);
-        event->SetEventObject((wxWindow*)main_frame);
-        wxQueueEvent((wxWindow*)main_frame, event);
+        wxCommandEvent *event = new wxCommandEvent(WX_STOP_EMULATION_EVENT, wxID_ANY);
+        event->SetEventObject((wxWindow *)main_frame);
+        wxQueueEvent((wxWindow *)main_frame, event);
 }
 
 extern "C" void arc_popup_menu()
@@ -485,7 +522,7 @@ extern "C" void arc_popup_menu()
 extern "C" void *wx_getnativemenu(void *menu)
 {
 #ifdef _WIN32
-        return ((wxMenu*)menu)->GetHMenu();
+        return ((wxMenu *)menu)->GetHMenu();
 #endif
         return 0;
 }
@@ -515,7 +552,7 @@ extern "C" void wx_winsendmessage(void *window, int msg, INT_PARAM wParam, LONG_
         wxQueueEvent((wxWindow *)window, event);
 }
 
-void Frame::OnWinSendMessageEvent(WinSendMessageEvent& event)
+void Frame::OnWinSendMessageEvent(WinSendMessageEvent &event)
 {
         SendMessage((HWND)event.GetHWND(), event.GetMessage(), event.GetWParam(), event.GetLParam());
 }
