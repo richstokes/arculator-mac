@@ -16,3 +16,6 @@ ROM
 
 **/Makefile
 **/Makefile.in
+
+libtool
+modules.dmp
