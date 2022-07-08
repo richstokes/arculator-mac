@@ -62,7 +62,7 @@ void mouse_poll_host()
                 mouse_y += mouse[1];
 
                 SDL_GetWindowSize(sdl_main_window, &rect.w, &rect.h);
-                SDL_WarpMouseInWindow(sdl_main_window, rect.w/2, rect.h/2);
+                SDL_WarpMouseInWindow(sdl_main_window, rect.w / 2, rect.h / 2);
         }
         else
         {
@@ -83,7 +83,6 @@ int mouse_get_buttons()
         return mouse_buttons;
 }
 
-
 int key[512];
 
 static void keyboard_init()
@@ -98,16 +97,19 @@ void keyboard_poll_host()
 {
         int c;
         const uint8_t *state = SDL_GetKeyboardState(NULL);
-        
+
         for (c = 0; c < 512; c++)
                 key[c] = state[c];
 }
 
-
 void input_init()
 {
+        rpclog("input_init\n");
         mouse_init();
         keyboard_init();
+        // SDL_CreateThread(mouse_init, "mouse_init", (void *)NULL);
+        // SDL_CreateThread(keyboard_init, "keyboard_init", (void *)NULL);
+        rpclog("input_init done\n");
 }
 void input_close()
 {
