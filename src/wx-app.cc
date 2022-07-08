@@ -97,29 +97,15 @@ Frame::Frame(App *app, const wxString &title, const wxPoint &pos,
                 this->menu = wxXmlResource::Get()->LoadMenu("main_menu");
                 if (menu)
                 {
+                        rpclog("Creating MacOS menu\n");
                         wxMenuBar *menubar = new wxMenuBar();
                         menubar->Append(menu, "&File");
                         SetMenuBar(menubar);
 
-                        // Append quit to menubar
-                        wxMenu *file = menu;
-                        wxMenuItem *quit = file->FindItemByPosition(file->GetMenuItemCount() - 1);
-                        if (quit)
-                        {
-                                wxMenu *quit_menu = new wxMenu();
-                                quit_menu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
-                                menubar->Append(quit_menu, "&Quit");
-                        }
-                }
-        }
-        else
-        {
-                wxMenuBar *menubar = new wxMenuBar();
-                this->menu = wxXmlResource::Get()->LoadMenu("main_menu");
-                if (menu)
-                {
-                        menubar->Append(menu, "&File");
-                        SetMenuBar(menubar);
+                        // Enable quit menu item
+                        wxMenuItem *item = menu->FindItem(wxID_EXIT);
+                        if (item)
+                                item->Enable(true);
                 }
         }
 
@@ -144,6 +130,12 @@ void Frame::Start()
         else
                 Quit(0);
 }
+
+// void Frame::OnExit(wxCommandEvent &event)
+// {
+//         rpclog("OnExit\n");
+//         Quit(0);
+// }
 
 wxMenu *Frame::GetMenu()
 {

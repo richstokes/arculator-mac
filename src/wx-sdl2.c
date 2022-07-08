@@ -43,6 +43,12 @@ static void sdl_disable_mouse_capture()
         updatemips = 1;
 }
 
+// MacOS stuff
+#ifdef __APPLE__
+#include <stdbool.h>
+static bool macos_mode = true;
+#endif
+
 static volatile int quited = 0;
 static volatile int pause_main_thread = 0;
 
@@ -139,12 +145,19 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
 
                 while (SDL_PollEvent(&e) != 0)
                 {
-                        // rpclog("Running SDL_PollEvent()\n");
                         if (e.type == SDL_QUIT)
                         {
-                                rpclog("SDL_QUIT\n");
-                                //                                quited = 1;
-                                arc_stop_emulation();
+                                if (macos_mode)
+                                {
+                                        rpclog("MacOS Quit event\n");
+                                        exit(0); // Hack until we have a proper quit event
+                                }
+                                else
+                                {
+                                        rpclog("SDL_QUIT\n");
+                                        //                                quited = 1;
+                                        arc_stop_emulation();
+                                }
                         }
                         if (e.type == SDL_MOUSEBUTTONUP)
                         {
@@ -282,21 +295,6 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
                         updatemips = 0;
                 }
         }
-
-        // Original junk
-        //  main_thread = NULL;
-        //  arc_main_thread(NULL);
-        //  SDL thread for macos
-        //  Create SDL thread via dispatch_queue
-        //  if (NULL == main_thread)
-        //  {
-        //          rpclog("SDL_CreateThread failed: %s\n", SDL_GetError());
-        //  }
-        //  else
-        //  {
-        //          SDL_WaitThread(main_thread, &threadReturnValue);
-        //          rpclog("Thread returned value: %d\n", threadReturnValue);
-        //  }
 }
 
 void arc_stop_main_thread()
