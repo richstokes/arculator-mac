@@ -5,7 +5,4 @@ Try `./mac-install.sh` -- read through the script first, since it installs a bun
 
 &nbsp;
 
-Now compiles and runs, but does not load menus correctly. Looking into that next.
-
-
-
+Now compiles and runs, but does not load menus correctly. Looking into that next.  This also means you have to force-quit the process.
