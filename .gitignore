@@ -3,3 +3,11 @@
 wx
 autom4te.cache
 hostfs
+arc.cfg
+arclog.txt
+cmos/*.bin
+config.log
+config.status
+aka31_log.txt
+.deps
+ROM
