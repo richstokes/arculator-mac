@@ -52,13 +52,13 @@ fi
 autoreconf -i #Fixes "configure: error: cannot find install-sh, install.sh"
 
 echo "Building arculator.."
-make clean || true
+make clean > /dev/null || true
 
 # Swap the two lines below if you want to use the debug version
 # ./configure --enable-release-build
 ./configure --enable-debug
 
-make -j$(nproc)
+make -j$(nproc) && clear
 
 # Copy your RiscOS rom to the arculator ROMs folder
 # Check ROMFILE exists
@@ -71,4 +71,4 @@ else
 fi
 
 echo ""
-echo "Build completed!\n Use ./arculator to run"
+printf "Build completed!\n Use ./arculator to run\n\n"
