@@ -9,7 +9,7 @@ if [ "$(uname)" != "Darwin" ]; then
 fi
 
 # Install Xcode
-echo "Installing Xcode if needed"
+echo "Installing Xcode if needed.."
 xcode-select --install || true
 
 
