@@ -8,6 +8,11 @@ if [ "$(uname)" != "Darwin" ]; then
     exit 1
 fi
 
+# Install Xcode
+echo "Installing Xcode if needed"
+xcode-select --install || true
+
+
 # Check for or install homebrew
 if test ! $(which brew); then
   echo "Installing homebrew.."
@@ -15,7 +20,7 @@ if test ! $(which brew); then
 fi
 
 echo "Installing Mac dependencies.."
-brew install sdl2 libx11 gcc automake autoconf cmake libtool hunspell || true 
+brew install sdl2 libx11 gcc automake autoconf cmake libtool hunspell wget coreutils || true 
 # export LIBRARY_PATH="/usr/local/lib:/usr/local/Cellar/sdl2:/usr/local/lib:/usr/local/Cellar/sdl2:/opt/homebrew/lib:$(brew info libx11 | grep /usr | cut -d" " -f1)/lib:$(brew info sdl2 | grep /usr | cut -d" " -f1):/usr/local/include/wx-3.1"
 # export LD_LIBRARY_PATH=/usr/local/lib
 export LDFLAGS="-lX11"
