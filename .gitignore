@@ -13,9 +13,37 @@ arc.cfg
 arclog.txt
 aka31_log.txt
 ROM
+roms/*/*.rom
 
 **/Makefile
 **/Makefile.in
 
 libtool
 modules.dmp
+
+# Build artifacts
+*.o
+*.lo
+*.la
+*.dylib
+**/.libs/
+**/.deps/
+src/arculator
+src/wx-resources.cc
+configure~
+
+# Podule build artifacts
+podules/*/src/*.lo
+podules/*/src/*.la
+podules/*/src/*.o
+podules/common/*/
+
+# Mac build script (generated/customized locally)
+mac-install.sh
+
+# Log files
+oak_scsi_log.txt
+
+# wxWidgets source
+wxWidgets-*/
+wxWidgets*.tar*
