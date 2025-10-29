@@ -34,8 +34,8 @@ typedef struct akd52_t
 	st506_t st506;
 } akd52_t;
 
-static void akd52_irq_raise();
-static void akd52_irq_clear();
+static void akd52_irq_raise(st506_t *st506);
+static void akd52_irq_clear(st506_t *st506);
 
 static int akd52_init(struct podule_t *podule)
 {

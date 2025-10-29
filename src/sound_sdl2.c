@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include "arc.h"
 #include "plat_sound.h"
 #include "arc.h"
 #include "disc.h"

@@ -11,9 +11,7 @@ typedef struct
 	void *p;
 } packet_t;
 
-struct net_t;
-
-typedef struct
+struct net_t
 {
 	void (*close)(struct net_t *net);
 	int (*read)(struct net_t *net, packet_t *packet);
@@ -21,7 +19,9 @@ typedef struct
 	void (*free)(struct net_t *net, packet_t *packet);
 
 	void *p;
-} net_t;
+};
+
+typedef struct net_t net_t;
 
 #define NETWORK_DEVICE_DEFAULT "slirp"
 
