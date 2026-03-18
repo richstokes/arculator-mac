@@ -10,6 +10,6 @@ As of March 2026, confirmed it builds and runs on macOS Tahoe.
 
 Clone the repo and run `./mac-install.sh` -- The script installs a number of packages, and will ask you to confirm interactively before installing anything.  
 
-Once built, you'll need to put a RiscOS ROM in one of the subdirectories under `./roms`.
+Once built, you'll need to put a [RiscOS ROM](https://www.4corn.co.uk/archive//roms/o-riscos3_11.zip) in one of the subdirectories under `./roms`.
 
 Run with `./arculator`.
