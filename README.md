@@ -1,6 +1,6 @@
-My attempt at getting arculator, the Acorn Archimedes emulator, to compile and run successfully on MacOS.  
+My attempt at getting arculator, the Acorn Archimedes emulator, to compile and run successfully on macOS.  
 
-Right now, it builds and runs on MacOS 12.4.  🎉
+Right now, it builds and runs on macOS Tahoe.  🎉
 
 There's a few kinks to work out (some of the menu items don't work), but seems to run pretty well!  
 
