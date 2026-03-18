@@ -1,2 +1,53 @@
 .vscode
+.DS_Store
+.dirstamp
+.deps
+.libs
 
+# Build artifacts
+*.o
+*.lo
+*.la
+*.dylib
+**/.libs/
+**/.deps/
+arculator
+src/arculator
+src/wx-resources.cc
+
+# Autotools generated
+autom4te.cache
+config.log
+config.status
+configure~
+libtool
+modules.dmp
+
+# wxWidgets source
+wxWidgets-*/
+wxWidgets*.tar*
+
+# Config & runtime files
+arc.cfg
+arclog.txt
+aka31_log.txt
+oak_scsi_log.txt
+cmos/*.bin
+configs/*.cfg
+hostfs
+ROM
+roms/*/*.rom
+roms/**/*.rom
+wx
+
+# Makefiles (autotools-generated)
+**/Makefile
+**/Makefile.in
+
+# Podule build artifacts
+podules/*/src/*.lo
+podules/*/src/*.la
+podules/*/src/*.o
+
+# Mac build script (generated/customized locally)
+mac-install.sh

@@ -15,6 +15,10 @@
 #include "video.h"
 #include "video_sdl2.h"
 
+#ifdef __APPLE__
+extern void arc_main_loop(void);
+#endif
+
 static int winsizex = 0, winsizey = 0;
 static int win_doresize = 0;
 static int win_dofullscreen = 0;
@@ -90,7 +94,12 @@ static int arc_main_thread(void *p)
 			if (e.type == SDL_QUIT)
 			{
 //                                quited = 1;
+#ifdef __APPLE__
 				arc_stop_emulation();
+				exit(0);
+#else
+				arc_stop_emulation();
+#endif
 			}
 			if (e.type == SDL_MOUSEBUTTONUP)
 			{
@@ -234,7 +243,12 @@ void arc_start_main_thread(void *wx_window, void *wx_menu)
 	quited = 0;
 	pause_main_thread = 0;
 	main_thread_mutex = SDL_CreateMutex();
+#ifdef __APPLE__
+	/* macOS requires SDL/UI operations on the main thread */
+	arc_main_thread(NULL);
+#else
 	main_thread = SDL_CreateThread(arc_main_thread, "Main Thread", (void *)NULL);
+#endif
 }
 
 void arc_stop_main_thread()

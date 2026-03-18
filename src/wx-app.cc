@@ -58,6 +58,9 @@ App::App()
 
 bool App::OnInit()
 {
+#ifdef __APPLE__
+	SetExitOnFrameDelete(true);
+#endif
 	wxImage::AddHandler( new wxPNGHandler );
 	wxXmlResource::Get()->InitAllHandlers();
 	InitXmlResource();
@@ -83,6 +86,11 @@ bool App::OnInit()
 static void *main_frame = NULL;
 static void *main_menu = NULL;
 
+#ifdef __APPLE__
+static bool s_macAutoWindowMenu = true;
+static short s_macWindowMenuHandle = 0;
+#endif
+
 Frame::Frame(App* app, const wxString& title, const wxPoint& pos,
 		const wxSize& size) :
 		wxFrame(NULL, wxID_ANY, title, pos, size, 0)
@@ -91,6 +99,13 @@ Frame::Frame(App* app, const wxString& title, const wxPoint& pos,
 
 	this->menu = wxXmlResource::Get()->LoadMenu(wxT("main_menu"));
 	main_menu = this->menu;
+
+#ifdef __APPLE__
+	/* Create a native menu bar for macOS */
+	wxMenuBar *menuBar = new wxMenuBar();
+	menuBar->Append(this->menu, wxT("Arculator"));
+	SetMenuBar(menuBar);
+#endif
 
 	Bind(wxEVT_MENU, &Frame::OnMenuCommand, this);
 	Bind(WX_POPUP_MENU_EVENT, &Frame::OnPopupMenuEvent, this);
@@ -584,6 +599,14 @@ void Frame::OnMenuCommand(wxCommandEvent &event)
 	{
 		debug = 1;
 	}
+#ifdef __APPLE__
+	else if (event.GetId() == XRCID("wxID_EXIT"))
+	{
+		rpclog("Mac Exit\n");
+		arc_stop_emulation();
+		exit(0);
+	}
+#endif
 }
 
 extern "C" void arc_stop_emulation()
