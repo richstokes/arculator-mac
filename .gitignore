@@ -2,24 +2,7 @@
 .DS_Store
 .dirstamp
 .deps
-cmos/*.bin
-configs/*.cfg
-config.log
-config.status
-wx
-autom4te.cache
-hostfs
-arc.cfg
-arclog.txt
-aka31_log.txt
-ROM
-roms/*/*.rom
-
-**/Makefile
-**/Makefile.in
-
-libtool
-modules.dmp
+.libs
 
 # Build artifacts
 *.o
@@ -28,9 +11,38 @@ modules.dmp
 *.dylib
 **/.libs/
 **/.deps/
+arculator
 src/arculator
 src/wx-resources.cc
+
+# Autotools generated
+autom4te.cache
+config.log
+config.status
 configure~
+libtool
+modules.dmp
+
+# wxWidgets source
+wxWidgets-*/
+wxWidgets*.tar*
+
+# Config & runtime files
+arc.cfg
+arclog.txt
+aka31_log.txt
+oak_scsi_log.txt
+cmos/*.bin
+configs/*.cfg
+hostfs
+ROM
+roms/*/*.rom
+roms/**/*.rom
+wx
+
+# Makefiles (autotools-generated)
+**/Makefile
+**/Makefile.in
 
 # Podule build artifacts
 podules/*/src/*.lo
@@ -40,10 +52,3 @@ podules/common/*/
 
 # Mac build script (generated/customized locally)
 mac-install.sh
-
-# Log files
-oak_scsi_log.txt
-
-# wxWidgets source
-wxWidgets-*/
-wxWidgets*.tar*
