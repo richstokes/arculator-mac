@@ -27,8 +27,8 @@ static int win_renderer_reset = 0;
 
 void updatewindowsize(int x, int y)
 {
-	winsizex = (x*(video_scale + 1)) / 2;
-	winsizey = (y*(video_scale + 1)) / 2;
+	winsizex = (x * (video_scale + 1)) / 2;
+	winsizey = (y * (video_scale + 1)) / 2;
 	win_doresize = 1;
 }
 
@@ -117,7 +117,7 @@ static int arc_main_thread(void *p)
 			{
 				switch (e.window.event)
 				{
-					case SDL_WINDOWEVENT_FOCUS_LOST:
+				case SDL_WINDOWEVENT_FOCUS_LOST:
 					if (mousecapture)
 					{
 						rpclog("Focus lost -- disabling mouse capture\n");
@@ -125,13 +125,11 @@ static int arc_main_thread(void *p)
 					}
 					break;
 
-					default:
+				default:
 					break;
 				}
 			}
-			if ((key[KEY_LCONTROL] || key[KEY_RCONTROL])
-			    && key[KEY_END]
-			    && !fullscreen && mousecapture)
+			if ((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END] && !fullscreen && mousecapture)
 			{
 				rpclog("CTRL-END pressed -- disabling mouse capture\n");
 				sdl_disable_mouse_capture();
@@ -158,8 +156,7 @@ static int arc_main_thread(void *p)
 		/*Toggle fullscreen with RWIN-Enter (Alt-Enter, Cmd-Enter),
 		  or enter by selecting Fullscreen from the menu.*/
 		if (win_dofullscreen ||
-			(key[KEY_RWIN] && key[KEY_ENTER] && !fullscreen)
-		)
+			(key[KEY_RWIN] && key[KEY_ENTER] && !fullscreen))
 		{
 			win_dofullscreen = 0;
 
@@ -167,19 +164,21 @@ static int arc_main_thread(void *p)
 			SDL_SetWindowFullscreen(sdl_main_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			sdl_enable_mouse_capture();
 			fullscreen = 1;
-		} else if (fullscreen && (
-			/*Exit fullscreen with Ctrl-End*/
-			((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END])
-			/*Toggle with RWIN-Enter*/
-			|| (key[KEY_RWIN] && key[KEY_ENTER])
-		))
+		}
+		else if (fullscreen && (
+								   /*Exit fullscreen with Ctrl-End*/
+								   ((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END])
+								   /*Toggle with RWIN-Enter*/
+								   || (key[KEY_RWIN] && key[KEY_ENTER])))
 		{
 			SDL_SetWindowFullscreen(sdl_main_window, 0);
 			sdl_disable_mouse_capture();
 
-			fullscreen=0;
-			if (fullborders) updatewindowsize(800,600);
-			else             updatewindowsize(672,544);
+			fullscreen = 0;
+			if (fullborders)
+				updatewindowsize(800, 600);
+			else
+				updatewindowsize(672, 544);
 		}
 
 		if (win_renderer_reset)
@@ -221,7 +220,7 @@ static int arc_main_thread(void *p)
 			vidc_framecount = 0;
 			if (!fullscreen)
 				SDL_SetWindowTitle(sdl_main_window, s);
-			updatemips=0;
+			updatemips = 0;
 		}
 	}
 	rpclog("SHUTTING DOWN\n");
