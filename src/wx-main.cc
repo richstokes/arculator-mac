@@ -7,17 +7,17 @@
 
 extern "C"
 {
-#ifndef _WIN32
-	#include <X11/Xlib.h>
+#if !defined(_WIN32) && !defined(__APPLE__)
+#include <X11/Xlib.h>
 #endif
-	#include "arc.h"
-	#include "config.h"
-	#include "podules.h"
+#include "arc.h"
+#include "config.h"
+#include "podules.h"
 }
 
 int main(int argc, char **argv)
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
 	XInitThreads();
 #endif
 
@@ -25,11 +25,11 @@ int main(int argc, char **argv)
 	char *p = (char *)get_filename(exname);
 	*p = 0;
 
-	if(argc > 1)
+	if (argc > 1)
 	{
 		wxString config_path = GetConfigPath(argv[1]);
 
-		if(wxFileName(config_path).Exists())
+		if (wxFileName(config_path).Exists())
 		{
 			strcpy(machine_config_file, config_path.mb_str());
 			strcpy(machine_config_name, argv[1]);
