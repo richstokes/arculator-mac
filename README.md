@@ -1,10 +1,8 @@
 # Overview
 
-My modifications to arculator, the Acorn Archimedes emulator, allowing it to compile and run successfully on macOS on Apple Silicon.  
+My modifications to [arculator](https://github.com/sarah-walker-pcem/arculator), the Acorn Archimedes emulator, allowing it to compile and run successfully on macOS with Apple Silicon.  
 
-Right now, it builds and runs on macOS Tahoe.  🎉
-
-There's a few kinks to work out (some of the menu items don't work), but seems to run pretty well!  
+As of March 2026, confirmed it builds and runs on macOS Tahoe.
 
 &nbsp;
 
