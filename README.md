@@ -1,6 +1,6 @@
 # Overview
 
-My modifications to arculator, the Acorn Archimedes emulator, to compile and run successfully on macOS.  
+My modifications to arculator, the Acorn Archimedes emulator, allowing it to compile and run successfully on macOS on Apple Silicon.  
 
 Right now, it builds and runs on macOS Tahoe.  🎉
 
