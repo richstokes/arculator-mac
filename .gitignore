@@ -48,6 +48,3 @@ wx
 podules/*/src/*.lo
 podules/*/src/*.la
 podules/*/src/*.o
-
-# Mac build script (generated/customized locally)
-mac-install.sh
