@@ -9,6 +9,10 @@ AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_CXX
+
+# Pin to C17 — this codebase uses pre-C23 patterns (typedef bool, K&R-style
+# empty-parens declarations) that are incompatible with C23.
+CFLAGS="$CFLAGS -std=gnu17"
 AM_PROG_CC_C_O
 AC_CACHE_VAL(lt_cv_deplibs_check_method,
     [lt_cv_deplibs_check_method=pass_all])
