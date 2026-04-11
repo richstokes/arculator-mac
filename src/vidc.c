@@ -344,7 +344,7 @@ void recalcse()
 
 static uint32_t vidc_make_colour(RGB r)
 {
-	if (video_black_level == BLACK_LEVEL_ACORN)
+	if (video_black_level == BLACK_LEVEL_ACORN && vidc.output_enable)
 	{
 		r.r = (MAX(r.r - 3, 0) * 255) / 12;
 		r.g = (MAX(r.g - 3, 0) * 255) / 12;
@@ -1366,6 +1366,7 @@ void vidc_attach(void (*vidc_data)(uint8_t *data, int pixels, int hsync_length, 
 void vidc_output_enable(int ena)
 {
 	vidc.output_enable = ena;
+	vidc_redopalette();
 }
 
 uint32_t vidc_get_current_vaddr(void)
