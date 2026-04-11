@@ -165,6 +165,7 @@ struct
 
 	void (*data_callback)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p);
 	void (*vsync_callback)(void *p, int state);
+	void (*redopalette_callback)(void *p);
 	void *callback_p;
 } vidc;
 
@@ -398,6 +399,9 @@ void vidc_redopalette(void)
 	}
 
 	palchange = 1;
+
+	if (vidc.redopalette_callback)
+		vidc.redopalette_callback(vidc.callback_p);
 }
 
 void writevidc(uint32_t v)
@@ -1356,10 +1360,14 @@ void vidc_reset()
 }
 
 
-void vidc_attach(void (*vidc_data)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p), void (*vidc_vsync)(void *p, int state), void *p)
+void vidc_attach(void (*vidc_data)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p),
+		 void (*vidc_vsync)(void *p, int state),
+		 void (*vidc_redopalette)(void *p),
+		 void *p)
 {
 	vidc.data_callback = vidc_data;
 	vidc.vsync_callback = vidc_vsync;
+	vidc.redopalette_callback = vidc_redopalette;
 	vidc.callback_p = p;
 }
 
