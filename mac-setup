@@ -66,35 +66,22 @@ check_arch
 # If configured so, install brew based automake, autoconf and libtool:
 if [ "${use_brew_automake}" == "no" ];
 then
-    brew uninstall automake autoconf libtool xquartz
+    brew uninstall automake autoconf libtool
 else
     if [ $force_reinstall -eq 1 ];
     then
-        brew reinstall automake autoconf libtool xquartz
+        brew reinstall automake autoconf libtool
     else
-        brew install automake autoconf libtool xquartz
+        brew install automake autoconf libtool
     fi
 fi
 
 # Install build dependecies:
 if [ $force_reinstall -eq 1 ];
 then
-    brew reinstall wxwidgets sdl2
+    brew reinstall wxwidgets sdl2 xquartz
 else
-    brew install wxwidgets sdl2
-fi
-
-# We need SDL2 in the default path:
-echo 
-echo Checking if SDL2 is in the clang default path, if not I will need admin privileges to create the symlink there
-echo This operation may require sudo privileges, so it may request for a password.
-echo
-if [ ! -L /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/SDL2 ];
-then
-  sudo ln -s ${brew_prefix}/sdl2/*/include/SDL2 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/SDL2
-else
-  sudo unlink /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/SDL2
-  sudo ln -s ${brew_prefix}/sdl2/*/include/SDL2 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/SDL2
+    brew install wxwidgets sdl2 xquartz
 fi
 
 # If configured so, pull down and compile automake, autoconf and libtool:
@@ -186,30 +173,6 @@ check_link "depcomp"
 check_link "install-sh"
 check_link "missing"
 
-# We need X11 in the default path so:
-echo Checking if X11 is in the clang default path, if not I will need admin privileges to create the symlink there
-
-if [ ! -L /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/X11 ];
-then
-  sudo ln -s /opt/X11/include/X11 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/X11
-  rval=$?
-  if [ ! $rval -eq 0 ];
-  then
-    ln -s /opt/X11/include/X11 /usr/local/include/X11
-  fi
-  sudo ln -s /opt/X11/lib/ /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/*/lib/x11
-else
-  sudo unlink /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/X11
-  sudo unlink /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/*/lib/x11
-  sudo ln -s /opt/X11/include/X11 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/X11
-  rval=$?
-  if [ ! $rval -eq 0 ];
-  then
-    ln -s /opt/X11/include/X11 /usr/local/include/X11
-  fi
-  sudo ln -s /opt/X11/lib/ /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/*/lib/x11  
-fi
-
 echo Dependecies installed.
 
 echo
@@ -225,8 +188,7 @@ autoconf
 automake --add-missing --force-missing
 
 # Run configure to configure build:
-full_path=$(echo ${brew_prefix}/sdl2/*)
-./configure --with-sdl-prefix=${full_path}
+./configure
 
 # Clean up possible spurious side effect of configure:
 if [ -d ./arculator ];

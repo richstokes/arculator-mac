@@ -72,6 +72,16 @@ if test "$wxWin" != 1; then
       ])
 fi
 
+case "$host" in
+    *-*-cygwin* | *-*-mingw32*)
+       ;;
+    *)
+       AC_PATH_XTRA
+       AS_IF([test "X$no_x" = "Xyes"],
+         [AC_MSG_ERROR([Could not find X11])])
+       ;;
+esac
+
 AC_CHECK_LIB([pthread], [pthread_create])
 
 build_macosx="no"
@@ -103,7 +113,7 @@ esac
 
 CFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CFLAGS"
 CXXFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CXXFLAGS"
-LIBS="$LIBS $WX_LIBS $SDL_LIBS"
+LIBS="$LIBS $WX_LIBS $SDL_LIBS $X_LIBS"
 
 AM_CONDITIONAL(OS_LINUX, [test "$build_linux" = "yes"])
 AM_CONDITIONAL(OS_WINDOWS, [test "$build_win" = "yes"])

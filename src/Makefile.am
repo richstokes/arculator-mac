@@ -20,9 +20,8 @@ endif
 amrefresh:
 
 # Special wxWidgets files
-WINDRES = $(shell $(WX_CONFIG_PATH) --rescomp)
 wx.res: wx.rc
-	$(WINDRES) -i wx.rc --input-format=rc -o wx.res -O coff
+	$(WX_RESCOMP) -i wx.rc --input-format=rc -o wx.res -O coff
 
 wx-resources.cc : arculator.xrc
 	-wxrc -c arculator.xrc -o wx-resources.cc
@@ -36,8 +35,8 @@ arculator_SOURCES = 82c711.c 82c711_fdc.c arm.c bmu.c cmos.c colourcard.c config
  video_sdl2.c wd1770.c wx-app.cc wx-config.cc wx-config_sel.cc wx-hd_conf.cc wx-console.cc wx-hd_new.cc \
  wx-joystick-config.cc wx-main.cc wx-podule-config.cc wx-resources.cc wx-sdl2-joystick.c
 
-arculator_CFLAGS = $(subst -fpermissive,,$(shell $(WX_CONFIG_PATH) --cxxflags)) $(SDL_CFLAGS)
-arculator_CXXFLAGS = $(shell $(WX_CONFIG_PATH) --cxxflags) $(SDL_CFLAGS)
+arculator_CFLAGS = $(WX_CFLAGS) $(SDL_CFLAGS) $(X_CFLAGS)
+arculator_CXXFLAGS = $(WX_CXXFLAGS) $(SDL_CFLAGS) $(X_CFLAGS)
 arculator_LDADD = @LIBS@
 
 if OS_WINDOWS
