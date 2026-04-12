@@ -7,6 +7,8 @@
 #include "arc.h"
 #include "arm.h"
 
+#define CHECK_ADDR_EXCEPTION(a) if ((a) & 0xfc000000) { databort = 2; return 0; }
+
 //#define UNDEFINED  11
 //#define undefined() exception(UNDEFINED,8,4)
 double fparegs[8] = {0.0}; /*No C variable type for 80-bit floating point, so use 64*/
@@ -439,6 +441,7 @@ int fpaopcode(uint32_t opcode)
 				if (opcode&0x800000) addr+=((opcode&0xFF)<<2);
 				else                 addr-=((opcode&0xFF)<<2);
 			}
+			CHECK_ADDR_EXCEPTION(addr);
 			switch (opcode&0x408000)
 			{
 				case 0x000000: /*Single*/
@@ -494,24 +497,27 @@ int fpaopcode(uint32_t opcode)
 					cache_read_timing(addr+8, !((addr + 8) & 0xc), 0);
 					break;
 				}
-				switch (opcode&0x408000)
+				if (!databort)
 				{
-					case 0x000000: /*Single*/
-					f32.i=temp[0];
-					fparegs[FD]=(double)f32.f;
-//                                        rpclog("Loaded %f %f %i %08X %08X %08X %08X\n",*tfs,fparegs[FD],len,addr,temp[0],temp[1],temp[2]);
-					break;
-					case 0x008000: /*Double*/
-					f64.i.l=temp[0];
-					f64.i.h=temp[1];
-					fparegs[FD]=f64.f;
-//                                        rpclog("F%i = %f %08X %08X\n",FD,(double)fparegs[FD], temp[0], temp[1]);
-					break;
+					switch (opcode&0x408000)
+					{
+						case 0x000000: /*Single*/
+						f32.i=temp[0];
+						fparegs[FD]=(double)f32.f;
+//      	                                  rpclog("Loaded %f %f %i %08X %08X %08X %08X\n",*tfs,fparegs[FD],len,addr,temp[0],temp[1],temp[2]);
+						break;
+						case 0x008000: /*Double*/
+						f64.i.l=temp[0];
+						f64.i.h=temp[1];
+						fparegs[FD]=f64.f;
+//      	                                  rpclog("F%i = %f %08X %08X\n",FD,(double)fparegs[FD], temp[0], temp[1]);
+						break;
 
-					case 0x400000: /*Long*/
-//                                        rpclog("Long load %08X %08X %08X\n", temp[0], temp[1], temp[2]);
-					fparegs[FD] = convert80to64(temp);
-					break;
+						case 0x400000: /*Long*/
+//                              	          rpclog("Long load %08X %08X %08X\n", temp[0], temp[1], temp[2]);
+						fparegs[FD] = convert80to64(temp);
+						break;
+					}
 				}
 			}
 			else
@@ -544,7 +550,8 @@ int fpaopcode(uint32_t opcode)
 				if (opcode&0x800000) addr+=((opcode&0xFF)<<2);
 				else                 addr-=((opcode&0xFF)<<2);
 			}
-			if (opcode&0x200000) armregs[RN]=addr;
+			if ((opcode & 0x200000) && !databort)
+				armregs[RN] = addr;
 			return 0;
 		}
 		if (opcode&0x100000) /*LFM*/
@@ -555,6 +562,7 @@ int fpaopcode(uint32_t opcode)
 				if (opcode&0x800000) addr+=((opcode&0xFF)<<2);
 				else                 addr-=((opcode&0xFF)<<2);
 			}
+			CHECK_ADDR_EXCEPTION(addr);
 //                        rpclog("LFM from %08X %08X %07X\n",GETADDR(RN),addr,PC);
 			switch (opcode&0x408000)
 			{
@@ -562,19 +570,23 @@ int fpaopcode(uint32_t opcode)
 				temp[0]=readmeml(addr);
 				temp[1]=readmeml(addr+4);
 				temp[2]=readmeml(addr+8);
-				fparegs[FD]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[FD] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+12);
 				temp[1]=readmeml(addr+16);
 				temp[2]=readmeml(addr+20);
-				fparegs[(FD+1)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+1)&7] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+24);
 				temp[1]=readmeml(addr+28);
 				temp[2]=readmeml(addr+32);
-				fparegs[(FD+2)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+2)&7] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+36);
 				temp[1]=readmeml(addr+40);
 				temp[2]=readmeml(addr+44);
-				fparegs[(FD+3)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+3)&7] = convert80to64(&temp[0]);
 				arm_clock_i(1);
 				cache_read_timing(addr, 1, 0);
 				cache_read_timing(addr+4, !((addr + 4) & 0xc), 0);
@@ -593,15 +605,18 @@ int fpaopcode(uint32_t opcode)
 				temp[0]=readmeml(addr);
 				temp[1]=readmeml(addr+4);
 				temp[2]=readmeml(addr+8);
-				fparegs[FD]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[FD] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+12);
 				temp[1]=readmeml(addr+16);
 				temp[2]=readmeml(addr+20);
-				fparegs[(FD+1)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+1)&7] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+24);
 				temp[1]=readmeml(addr+28);
 				temp[2]=readmeml(addr+32);
-				fparegs[(FD+2)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+2)&7] = convert80to64(&temp[0]);
 				arm_clock_i(1);
 				cache_read_timing(addr, 1, 0);
 				cache_read_timing(addr+4, !((addr + 4) & 0xc), 0);
@@ -617,11 +632,13 @@ int fpaopcode(uint32_t opcode)
 				temp[0]=readmeml(addr);
 				temp[1]=readmeml(addr+4);
 				temp[2]=readmeml(addr+8);
-				fparegs[FD]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[FD] = convert80to64(&temp[0]);
 				temp[0]=readmeml(addr+12);
 				temp[1]=readmeml(addr+16);
 				temp[2]=readmeml(addr+20);
-				fparegs[(FD+1)&7]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[(FD+1)&7] = convert80to64(&temp[0]);
 				arm_clock_i(1);
 				cache_read_timing(addr, 1, 0);
 				cache_read_timing(addr+4, !((addr + 4) & 0xc), 0);
@@ -634,7 +651,8 @@ int fpaopcode(uint32_t opcode)
 				temp[0]=readmeml(addr);
 				temp[1]=readmeml(addr+4);
 				temp[2]=readmeml(addr+8);
-				fparegs[FD]=convert80to64(&temp[0]);
+				if (!databort)
+					fparegs[FD] = convert80to64(&temp[0]);
 				arm_clock_i(1);
 				cache_read_timing(addr, 1, 0);
 				cache_read_timing(addr+4, !((addr + 4) & 0xc), 0);
@@ -658,6 +676,7 @@ int fpaopcode(uint32_t opcode)
 				if (opcode&0x800000) addr+=((opcode&0xFF)<<2);
 				else                 addr-=((opcode&0xFF)<<2);
 			}
+			CHECK_ADDR_EXCEPTION(addr);
 //                        rpclog("SFM from %08X %08X %07X\n",GETADDR(RN),addr,PC);
 			switch (opcode&0x408000)
 			{
@@ -753,7 +772,8 @@ int fpaopcode(uint32_t opcode)
 				if (opcode&0x800000) addr+=((opcode&0xFF)<<2);
 				else                 addr-=((opcode&0xFF)<<2);
 			}
-			if (opcode&0x200000) armregs[RN]=addr;
+			if ((opcode & 0x200000) && !databort)
+				armregs[RN] = addr;
 			return 0;
 		}
 		/*LFM/SFM*/
