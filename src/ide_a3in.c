@@ -34,8 +34,8 @@ typedef struct ide_a3in_ide_t
 	ide_t ide;
 } ide_a3in_ide_t;
 
-static void ide_a3in_ide_irq_raise();
-static void ide_a3in_ide_irq_clear();
+static void ide_a3in_ide_irq_raise(ide_t *ide);
+static void ide_a3in_ide_irq_clear(ide_t *ide);
 
 static int ics_a3in_ide_init(struct podule_t *podule)
 {
