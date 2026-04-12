@@ -165,6 +165,7 @@ struct
 
 	void (*data_callback)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p);
 	void (*vsync_callback)(void *p, int state);
+	void (*redopalette_callback)(void *p);
 	void *callback_p;
 } vidc;
 
@@ -344,7 +345,7 @@ void recalcse()
 
 static uint32_t vidc_make_colour(RGB r)
 {
-	if (video_black_level == BLACK_LEVEL_ACORN)
+	if (video_black_level == BLACK_LEVEL_ACORN && vidc.output_enable)
 	{
 		r.r = (MAX(r.r - 3, 0) * 255) / 12;
 		r.g = (MAX(r.g - 3, 0) * 255) / 12;
@@ -398,6 +399,9 @@ void vidc_redopalette(void)
 	}
 
 	palchange = 1;
+
+	if (vidc.redopalette_callback)
+		vidc.redopalette_callback(vidc.callback_p);
 }
 
 void writevidc(uint32_t v)
@@ -1356,16 +1360,21 @@ void vidc_reset()
 }
 
 
-void vidc_attach(void (*vidc_data)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p), void (*vidc_vsync)(void *p, int state), void *p)
+void vidc_attach(void (*vidc_data)(uint8_t *data, int pixels, int hsync_length, int resolution, void *p),
+		 void (*vidc_vsync)(void *p, int state),
+		 void (*vidc_redopalette)(void *p),
+		 void *p)
 {
 	vidc.data_callback = vidc_data;
 	vidc.vsync_callback = vidc_vsync;
+	vidc.redopalette_callback = vidc_redopalette;
 	vidc.callback_p = p;
 }
 
 void vidc_output_enable(int ena)
 {
 	vidc.output_enable = ena;
+	vidc_redopalette();
 }
 
 uint32_t vidc_get_current_vaddr(void)
