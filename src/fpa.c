@@ -15,32 +15,6 @@ double fparegs[8] = {0.0}; /*No C variable type for 80-bit floating point, so us
 uint32_t fpsr = 0, fpcr = 0;
 int fpu_type;
 
-void dumpfpa(void)
-{
-	rpclog("F0=%f F1=%f F2=%f F3=%f ",fparegs[0],fparegs[1],fparegs[2],fparegs[3]);
-	rpclog("F4=%f F5=%f F6=%f F7=%f\n",fparegs[4],fparegs[5],fparegs[6],fparegs[7]);
-//        rpclog("FPSR=%08X FPCR=%08X\n",fpsr,fpcr);
-}
-
-void resetfpa()
-{
-	uint32_t temp[3];
-	float *tfs;
-	double tf;
-	tfs=(float *)temp;
-	*tfs=0.12f;
-	tf=(double)(*tfs);
-	rpclog("Double size %i Float size %i %f %f\n",sizeof(double),sizeof(float),*tfs,tf);
-//        fpsr=0;
-	if (fpu_type)
-		fpsr=0x80000000; /*FPPC system*/
-	else
-		fpsr=0x81000000; /*FPA system*/
-	fpcr=0;
-	atexit(dumpfpa);
-	rpclog("fpsr=%08x fpu_type=%i\n", fpsr, fpu_type);
-}
-
 #define FD ((opcode>>12)&7)
 #define FN ((opcode>>16)&7)
 #define RD ((opcode>>12)&0xF)
@@ -65,6 +39,32 @@ void resetfpa()
 #define FPCR_DA (1 << 8)  /*FPA disable*/
 
 #define FPA_DISABLED (fpcr & FPCR_DA)
+
+void dumpfpa(void)
+{
+	rpclog("F0=%f F1=%f F2=%f F3=%f ",fparegs[0],fparegs[1],fparegs[2],fparegs[3]);
+	rpclog("F4=%f F5=%f F6=%f F7=%f\n",fparegs[4],fparegs[5],fparegs[6],fparegs[7]);
+//        rpclog("FPSR=%08X FPCR=%08X\n",fpsr,fpcr);
+}
+
+void resetfpa()
+{
+	uint32_t temp[3];
+	float *tfs;
+	double tf;
+	tfs=(float *)temp;
+	*tfs=0.12f;
+	tf=(double)(*tfs);
+	rpclog("Double size %i Float size %i %f %f\n",sizeof(double),sizeof(float),*tfs,tf);
+//        fpsr=0;
+	if (fpu_type)
+		fpsr=0x80000000; /*FPPC system*/
+	else
+		fpsr=0x81000000; /*FPA system*/
+	fpcr = FPCR_SB | FPCR_AB | FPCR_DA;
+	atexit(dumpfpa);
+	rpclog("fpsr=%08x fpu_type=%i\n", fpsr, fpu_type);
+}
 
 void setsubf(double op1, double op2)
 {
