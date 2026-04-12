@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "arc.h"
 #include "config.h"
