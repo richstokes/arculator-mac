@@ -41,15 +41,8 @@ arculator_LDADD = @LIBS@
 
 if OS_WINDOWS
 arculator_SOURCES += hostfs-win.c podules-win.c wx-win32.c
-endif
-
-if OS_LINUX
-arculator_SOURCES += hostfs-unix.c podules-linux.c wx-sdl2.c
+else
+arculator_SOURCES += hostfs-unix.c podules-unix.c wx-sdl2.c
 arculator_LDADD += -ldl -lX11
-endif
-
-if OS_MACOSX
-arculator_SOURCES += hostfs-unix.c podules-macosx.c wx-sdl2.c
-arculator_LDADD += -lX11
 endif
 

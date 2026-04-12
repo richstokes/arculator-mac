@@ -41,7 +41,14 @@ AC_MSG_CHECKING([whether to build podules])
 AC_ARG_ENABLE(podules,
           AS_HELP_STRING([--disable-podules],[don't build podules]))
 if test "$enable_podules" != "no"; then
-   AC_MSG_RESULT([yes])
+   module=no eval SO_EXT=$shrext_cmds
+   if test "$SO_EXT" = ""; then
+      SO_EXT=.so
+   fi
+   AC_SUBST(SO_EXT, "$SO_EXT")
+   CFLAGS_BUILD="-DSO_EXT=\\\"$SO_EXT\\\""
+
+   AC_MSG_RESULT([yes ($SO_EXT)])
 else
    AC_MSG_RESULT([no])
 fi
