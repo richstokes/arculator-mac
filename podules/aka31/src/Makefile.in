@@ -94,14 +94,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_1 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../aka31.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_3 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_4 = ../aka31.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_5 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_6 = ../aka31.dylib
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_7 = ../../common/cdrom/cdrom-windows-ioctl.c
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_8 = ../../common/cdrom/cdrom-linux-ioctl.c
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_9 = ../../common/cdrom/cdrom-osx-ioctl.c
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../aka31$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_3 = $(noinst_SCRIPTS)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_4 = ../aka31$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_5 = ../../common/cdrom/cdrom-windows-ioctl.c
+@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_6 = ../../common/cdrom/cdrom-linux-ioctl.c
+@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_7 = ../../common/cdrom/cdrom-osx-ioctl.c
 subdir = podules/aka31/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -256,6 +254,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -320,6 +319,7 @@ SDL_LIBS = @SDL_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SO_EXT = @SO_EXT@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WX_CFLAGS = @WX_CFLAGS@
@@ -335,6 +335,11 @@ WX_VERSION = @WX_VERSION@
 WX_VERSION_MAJOR = @WX_VERSION_MAJOR@
 WX_VERSION_MICRO = @WX_VERSION_MICRO@
 WX_VERSION_MINOR = @WX_VERSION_MINOR@
+XMKMF = @XMKMF@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -393,10 +398,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 @BUILD_PODULES_TRUE@lib_LTLIBRARIES = libaka31.la
-@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4) \
-@BUILD_PODULES_TRUE@	$(am__append_6)
-@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3) \
-@BUILD_PODULES_TRUE@	$(am__append_5)
+@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4)
+@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3)
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@libaka31_la_LDFLAGS = -no-undefined
 @BUILD_PODULES_TRUE@libaka31_la_SOURCES = aka31.c d71071l.c \
 @BUILD_PODULES_TRUE@	../../common/scsi/hdd_file.c \
@@ -405,8 +408,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 @BUILD_PODULES_TRUE@	../../common/scsi/scsi_config.c \
 @BUILD_PODULES_TRUE@	../../common/scsi/scsi_hd.c wd33c93a.c \
 @BUILD_PODULES_TRUE@	../../common/sound/sound_out_sdl2.c \
-@BUILD_PODULES_TRUE@	$(am__append_7) $(am__append_8) \
-@BUILD_PODULES_TRUE@	$(am__append_9)
+@BUILD_PODULES_TRUE@	$(am__append_5) $(am__append_6) \
+@BUILD_PODULES_TRUE@	$(am__append_7)
 @BUILD_PODULES_TRUE@libaka31_la_CFLAGS = $(SDL_CFLAGS) -I../../../src -I../../common/cdrom -I../../common/sound -I../../common/scsi
 @BUILD_PODULES_TRUE@libaka31_la_LIBADD = @LIBS@
 all: all-am
@@ -912,12 +915,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../aka31.dll: libaka31.la
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libaka31-0.dll ../aka31.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@../aka31.so: libaka31.la
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@	cp .libs/libaka31.so ../aka31.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@../aka31.dylib: libaka31.la
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@	cp .libs/libaka31.dylib ../aka31.dylib
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../aka31$(SO_EXT): libaka31.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libaka31-0$(SO_EXT) ../aka31$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@../aka31$(SO_EXT): libaka31.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@	cp .libs/libaka31$(SO_EXT) ../aka31$(SO_EXT)
 
 @BUILD_PODULES_TRUE@amrefresh:
 

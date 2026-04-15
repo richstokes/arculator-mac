@@ -99,9 +99,8 @@ bin_PROGRAMS = arculator$(EXEEXT)
 am__append_3 = $(noinst_SCRIPTS)
 am__append_4 = ../arculator
 #am__append_5 = hostfs-win.c podules-win.c wx-win32.c
-#am__append_6 = hostfs-unix.c podules-linux.c wx-sdl2.c
-#am__append_7 = -ldl -lX11
-am__append_8 = hostfs-unix.c podules-macosx.c wx-sdl2.c
+am__append_6 = hostfs-unix.c podules-unix.c wx-sdl2.c
+am__append_7 = -ldl -lX11
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -118,24 +117,21 @@ am__arculator_SOURCES_DIST = 82c711.c 82c711_fdc.c arm.c bmu.c cmos.c \
 	debugger_swis.c disc.c disc_adf.c disc_apd.c disc_fdi.c \
 	disc_hfe.c disc_jfd.c disc_mfm_common.c disc_scp.c ds2401.c \
 	eterna.c fdi2raw.c fpa.c g16.c g332.c hostfs.c ide.c \
-	ide_a3in.c ide_config.c ide_idea.c ide_riscdev.c ide_zidefs.c \
-	ide_zidefs_a3k.c input_sdl2.c ioc.c ioeb.c joystick.c \
-	keyboard.c lc.c main.c mem.c memc.c podules.c printer.c \
-	riscdev_hdfc.c romload.c sound.c sound_sdl2.c st506.c \
-	st506_akd52.c timer.c vidc.c video_sdl2.c wd1770.c wx-app.cc \
-	wx-config.cc wx-config_sel.cc wx-hd_conf.cc wx-console.cc \
-	wx-hd_new.cc wx-joystick-config.cc wx-main.cc \
+	ide_a3in.c ide_config.c ide_hccs_a3k.c ide_idea.c \
+	ide_riscdev.c ide_zidefs.c ide_zidefs_a3k.c input_sdl2.c ioc.c \
+	ioeb.c joystick.c keyboard.c lc.c main.c mem.c memc.c \
+	podules.c printer.c riscdev_hdfc.c romload.c sound.c \
+	sound_sdl2.c st506.c st506_akd52.c timer.c vidc.c video_sdl2.c \
+	wd1770.c wx-app.cc wx-config.cc wx-config_sel.cc wx-hd_conf.cc \
+	wx-console.cc wx-hd_new.cc wx-joystick-config.cc wx-main.cc \
 	wx-podule-config.cc wx-resources.cc wx-sdl2-joystick.c \
 	hostfs-win.c podules-win.c wx-win32.c hostfs-unix.c \
-	podules-linux.c wx-sdl2.c podules-macosx.c
+	podules-unix.c wx-sdl2.c
 #am__objects_1 = arculator-hostfs-win.$(OBJEXT) \
 #	arculator-podules-win.$(OBJEXT) \
 #	arculator-wx-win32.$(OBJEXT)
-#am__objects_2 = arculator-hostfs-unix.$(OBJEXT) \
-#	arculator-podules-linux.$(OBJEXT) \
-#	arculator-wx-sdl2.$(OBJEXT)
-am__objects_3 = arculator-hostfs-unix.$(OBJEXT) \
-	arculator-podules-macosx.$(OBJEXT) \
+am__objects_2 = arculator-hostfs-unix.$(OBJEXT) \
+	arculator-podules-unix.$(OBJEXT) \
 	arculator-wx-sdl2.$(OBJEXT)
 am_arculator_OBJECTS = arculator-82c711.$(OBJEXT) \
 	arculator-82c711_fdc.$(OBJEXT) arculator-arm.$(OBJEXT) \
@@ -152,7 +148,8 @@ am_arculator_OBJECTS = arculator-82c711.$(OBJEXT) \
 	arculator-fpa.$(OBJEXT) arculator-g16.$(OBJEXT) \
 	arculator-g332.$(OBJEXT) arculator-hostfs.$(OBJEXT) \
 	arculator-ide.$(OBJEXT) arculator-ide_a3in.$(OBJEXT) \
-	arculator-ide_config.$(OBJEXT) arculator-ide_idea.$(OBJEXT) \
+	arculator-ide_config.$(OBJEXT) \
+	arculator-ide_hccs_a3k.$(OBJEXT) arculator-ide_idea.$(OBJEXT) \
 	arculator-ide_riscdev.$(OBJEXT) arculator-ide_zidefs.$(OBJEXT) \
 	arculator-ide_zidefs_a3k.$(OBJEXT) \
 	arculator-input_sdl2.$(OBJEXT) arculator-ioc.$(OBJEXT) \
@@ -175,7 +172,7 @@ am_arculator_OBJECTS = arculator-82c711.$(OBJEXT) \
 	arculator-wx-podule-config.$(OBJEXT) \
 	arculator-wx-resources.$(OBJEXT) \
 	arculator-wx-sdl2-joystick.$(OBJEXT) $(am__objects_1) \
-	$(am__objects_2) $(am__objects_3)
+	$(am__objects_2)
 arculator_OBJECTS = $(am_arculator_OBJECTS)
 am__DEPENDENCIES_1 =
 arculator_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -228,6 +225,7 @@ am__depfiles_remade = ./$(DEPDIR)/arculator-82c711.Po \
 	./$(DEPDIR)/arculator-hostfs.Po ./$(DEPDIR)/arculator-ide.Po \
 	./$(DEPDIR)/arculator-ide_a3in.Po \
 	./$(DEPDIR)/arculator-ide_config.Po \
+	./$(DEPDIR)/arculator-ide_hccs_a3k.Po \
 	./$(DEPDIR)/arculator-ide_idea.Po \
 	./$(DEPDIR)/arculator-ide_riscdev.Po \
 	./$(DEPDIR)/arculator-ide_zidefs.Po \
@@ -238,8 +236,7 @@ am__depfiles_remade = ./$(DEPDIR)/arculator-82c711.Po \
 	./$(DEPDIR)/arculator-keyboard.Po ./$(DEPDIR)/arculator-lc.Po \
 	./$(DEPDIR)/arculator-main.Po ./$(DEPDIR)/arculator-mem.Po \
 	./$(DEPDIR)/arculator-memc.Po \
-	./$(DEPDIR)/arculator-podules-linux.Po \
-	./$(DEPDIR)/arculator-podules-macosx.Po \
+	./$(DEPDIR)/arculator-podules-unix.Po \
 	./$(DEPDIR)/arculator-podules-win.Po \
 	./$(DEPDIR)/arculator-podules.Po \
 	./$(DEPDIR)/arculator-printer.Po \
@@ -338,14 +335,15 @@ AUTOMAKE = ${SHELL} '/Users/rich/Dropbox/code/arculator-mac/missing' automake-1.
 AWK = awk
 CC = gcc -std=gnu23
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3  -DRELEASE_BUILD -g -O2 -std=gnu17
+CFLAGS = -DSO_EXT=\".dylib\"  -DRELEASE_BUILD -g -O2 -std=gnu17
+CPP = gcc -std=gnu23 -E
 CPPFLAGS = 
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -O3  -DRELEASE_BUILD -g -O2
+CXXFLAGS = -DSO_EXT=\".dylib\"  -DRELEASE_BUILD -g -O2
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"Arculator\" -DPACKAGE_TARNAME=\"arculator\" -DPACKAGE_VERSION=\"v2.2\" -DPACKAGE_STRING=\"Arculator\ v2.2\" -DPACKAGE_BUGREPORT=\"Sarah\ Walker\ \<b-em@bbcmicro.com\>\" -DPACKAGE_URL=\"\" -DPACKAGE=\"arculator\" -DVERSION=\"v2.2\" -DHAVE_STDIO_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UNISTD_H=1 -DSTDC_HEADERS=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIBZ=1 -DHAVE_LIBPTHREAD=1
 DEPDIR = .deps
@@ -369,7 +367,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2
+LIBS = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2  -L/usr/local/lib
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = lipo
 LN_S = ln -s
@@ -403,6 +401,7 @@ SDL_LIBS = -L/opt/homebrew/lib -lSDL2
 SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
+SO_EXT = .dylib
 STRIP = strip
 VERSION = v2.2
 WX_CFLAGS = -I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.3 -I/opt/homebrew/include/wx-3.3 -D_FILE_OFFSET_BITS=64 -DwxDEBUG_LEVEL=0 -DWXUSINGDLL -D__WXMAC__ -D__WXOSX__ -D__WXOSX_COCOA__
@@ -418,6 +417,11 @@ WX_VERSION = 3.3.2
 WX_VERSION_MAJOR = 3
 WX_VERSION_MICRO = 2
 WX_VERSION_MINOR = 3
+XMKMF = 
+X_CFLAGS = 
+X_EXTRA_LIBS = 
+X_LIBS =  -L/usr/local/lib
+X_PRE_LIBS = 
 abs_builddir = /Users/rich/Dropbox/code/arculator-mac/src
 abs_srcdir = /Users/rich/Dropbox/code/arculator-mac/src
 abs_top_builddir = /Users/rich/Dropbox/code/arculator-mac
@@ -478,27 +482,24 @@ AUTOMAKE_OPTIONS = subdir-objects
 noinst_SCRIPTS = $(am__append_2) $(am__append_4)
 CLEANFILES = $(am__append_1) $(am__append_3)
 
-# Special wxWidgets files
-WINDRES = $(shell $(WX_CONFIG_PATH) --rescomp)
-
 # Arculator
 arculator_SOURCES = 82c711.c 82c711_fdc.c arm.c bmu.c cmos.c \
 	colourcard.c config.c cp15.c ddnoise.c debugger.c \
 	debugger_swis.c disc.c disc_adf.c disc_apd.c disc_fdi.c \
 	disc_hfe.c disc_jfd.c disc_mfm_common.c disc_scp.c ds2401.c \
 	eterna.c fdi2raw.c fpa.c g16.c g332.c hostfs.c ide.c \
-	ide_a3in.c ide_config.c ide_idea.c ide_riscdev.c ide_zidefs.c \
-	ide_zidefs_a3k.c input_sdl2.c ioc.c ioeb.c joystick.c \
-	keyboard.c lc.c main.c mem.c memc.c podules.c printer.c \
-	riscdev_hdfc.c romload.c sound.c sound_sdl2.c st506.c \
-	st506_akd52.c timer.c vidc.c video_sdl2.c wd1770.c wx-app.cc \
-	wx-config.cc wx-config_sel.cc wx-hd_conf.cc wx-console.cc \
-	wx-hd_new.cc wx-joystick-config.cc wx-main.cc \
+	ide_a3in.c ide_config.c ide_hccs_a3k.c ide_idea.c \
+	ide_riscdev.c ide_zidefs.c ide_zidefs_a3k.c input_sdl2.c ioc.c \
+	ioeb.c joystick.c keyboard.c lc.c main.c mem.c memc.c \
+	podules.c printer.c riscdev_hdfc.c romload.c sound.c \
+	sound_sdl2.c st506.c st506_akd52.c timer.c vidc.c video_sdl2.c \
+	wd1770.c wx-app.cc wx-config.cc wx-config_sel.cc wx-hd_conf.cc \
+	wx-console.cc wx-hd_new.cc wx-joystick-config.cc wx-main.cc \
 	wx-podule-config.cc wx-resources.cc wx-sdl2-joystick.c \
-	$(am__append_5) $(am__append_6) $(am__append_8)
-arculator_CFLAGS = $(subst -fpermissive,,$(shell $(WX_CONFIG_PATH) --cxxflags)) $(SDL_CFLAGS)
-arculator_CXXFLAGS = $(shell $(WX_CONFIG_PATH) --cxxflags) $(SDL_CFLAGS)
-arculator_LDADD = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2 $(am__append_7)
+	$(am__append_5) $(am__append_6)
+arculator_CFLAGS = $(WX_CFLAGS) $(SDL_CFLAGS) $(X_CFLAGS)
+arculator_CXXFLAGS = $(WX_CXXFLAGS) $(SDL_CFLAGS) $(X_CFLAGS)
+arculator_LDADD = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2  -L/usr/local/lib $(am__append_7)
 all: all-am
 
 .SUFFIXES:
@@ -618,6 +619,7 @@ include ./$(DEPDIR)/arculator-hostfs.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide_a3in.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide_config.Po # am--include-marker
+include ./$(DEPDIR)/arculator-ide_hccs_a3k.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide_idea.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide_riscdev.Po # am--include-marker
 include ./$(DEPDIR)/arculator-ide_zidefs.Po # am--include-marker
@@ -631,8 +633,7 @@ include ./$(DEPDIR)/arculator-lc.Po # am--include-marker
 include ./$(DEPDIR)/arculator-main.Po # am--include-marker
 include ./$(DEPDIR)/arculator-mem.Po # am--include-marker
 include ./$(DEPDIR)/arculator-memc.Po # am--include-marker
-include ./$(DEPDIR)/arculator-podules-linux.Po # am--include-marker
-include ./$(DEPDIR)/arculator-podules-macosx.Po # am--include-marker
+include ./$(DEPDIR)/arculator-podules-unix.Po # am--include-marker
 include ./$(DEPDIR)/arculator-podules-win.Po # am--include-marker
 include ./$(DEPDIR)/arculator-podules.Po # am--include-marker
 include ./$(DEPDIR)/arculator-printer.Po # am--include-marker
@@ -1096,6 +1097,20 @@ arculator-ide_config.obj: ide_config.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-ide_config.obj `if test -f 'ide_config.c'; then $(CYGPATH_W) 'ide_config.c'; else $(CYGPATH_W) '$(srcdir)/ide_config.c'; fi`
 
+arculator-ide_hccs_a3k.o: ide_hccs_a3k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-ide_hccs_a3k.o -MD -MP -MF $(DEPDIR)/arculator-ide_hccs_a3k.Tpo -c -o arculator-ide_hccs_a3k.o `test -f 'ide_hccs_a3k.c' || echo '$(srcdir)/'`ide_hccs_a3k.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-ide_hccs_a3k.Tpo $(DEPDIR)/arculator-ide_hccs_a3k.Po
+#	$(AM_V_CC)source='ide_hccs_a3k.c' object='arculator-ide_hccs_a3k.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-ide_hccs_a3k.o `test -f 'ide_hccs_a3k.c' || echo '$(srcdir)/'`ide_hccs_a3k.c
+
+arculator-ide_hccs_a3k.obj: ide_hccs_a3k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-ide_hccs_a3k.obj -MD -MP -MF $(DEPDIR)/arculator-ide_hccs_a3k.Tpo -c -o arculator-ide_hccs_a3k.obj `if test -f 'ide_hccs_a3k.c'; then $(CYGPATH_W) 'ide_hccs_a3k.c'; else $(CYGPATH_W) '$(srcdir)/ide_hccs_a3k.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-ide_hccs_a3k.Tpo $(DEPDIR)/arculator-ide_hccs_a3k.Po
+#	$(AM_V_CC)source='ide_hccs_a3k.c' object='arculator-ide_hccs_a3k.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-ide_hccs_a3k.obj `if test -f 'ide_hccs_a3k.c'; then $(CYGPATH_W) 'ide_hccs_a3k.c'; else $(CYGPATH_W) '$(srcdir)/ide_hccs_a3k.c'; fi`
+
 arculator-ide_idea.o: ide_idea.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-ide_idea.o -MD -MP -MF $(DEPDIR)/arculator-ide_idea.Tpo -c -o arculator-ide_idea.o `test -f 'ide_idea.c' || echo '$(srcdir)/'`ide_idea.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-ide_idea.Tpo $(DEPDIR)/arculator-ide_idea.Po
@@ -1516,19 +1531,19 @@ arculator-hostfs-unix.obj: hostfs-unix.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-hostfs-unix.obj `if test -f 'hostfs-unix.c'; then $(CYGPATH_W) 'hostfs-unix.c'; else $(CYGPATH_W) '$(srcdir)/hostfs-unix.c'; fi`
 
-arculator-podules-linux.o: podules-linux.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-linux.o -MD -MP -MF $(DEPDIR)/arculator-podules-linux.Tpo -c -o arculator-podules-linux.o `test -f 'podules-linux.c' || echo '$(srcdir)/'`podules-linux.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-linux.Tpo $(DEPDIR)/arculator-podules-linux.Po
-#	$(AM_V_CC)source='podules-linux.c' object='arculator-podules-linux.o' libtool=no \
+arculator-podules-unix.o: podules-unix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-unix.o -MD -MP -MF $(DEPDIR)/arculator-podules-unix.Tpo -c -o arculator-podules-unix.o `test -f 'podules-unix.c' || echo '$(srcdir)/'`podules-unix.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-unix.Tpo $(DEPDIR)/arculator-podules-unix.Po
+#	$(AM_V_CC)source='podules-unix.c' object='arculator-podules-unix.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-linux.o `test -f 'podules-linux.c' || echo '$(srcdir)/'`podules-linux.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-unix.o `test -f 'podules-unix.c' || echo '$(srcdir)/'`podules-unix.c
 
-arculator-podules-linux.obj: podules-linux.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-linux.obj -MD -MP -MF $(DEPDIR)/arculator-podules-linux.Tpo -c -o arculator-podules-linux.obj `if test -f 'podules-linux.c'; then $(CYGPATH_W) 'podules-linux.c'; else $(CYGPATH_W) '$(srcdir)/podules-linux.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-linux.Tpo $(DEPDIR)/arculator-podules-linux.Po
-#	$(AM_V_CC)source='podules-linux.c' object='arculator-podules-linux.obj' libtool=no \
+arculator-podules-unix.obj: podules-unix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-unix.obj -MD -MP -MF $(DEPDIR)/arculator-podules-unix.Tpo -c -o arculator-podules-unix.obj `if test -f 'podules-unix.c'; then $(CYGPATH_W) 'podules-unix.c'; else $(CYGPATH_W) '$(srcdir)/podules-unix.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-unix.Tpo $(DEPDIR)/arculator-podules-unix.Po
+#	$(AM_V_CC)source='podules-unix.c' object='arculator-podules-unix.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-linux.obj `if test -f 'podules-linux.c'; then $(CYGPATH_W) 'podules-linux.c'; else $(CYGPATH_W) '$(srcdir)/podules-linux.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-unix.obj `if test -f 'podules-unix.c'; then $(CYGPATH_W) 'podules-unix.c'; else $(CYGPATH_W) '$(srcdir)/podules-unix.c'; fi`
 
 arculator-wx-sdl2.o: wx-sdl2.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-wx-sdl2.o -MD -MP -MF $(DEPDIR)/arculator-wx-sdl2.Tpo -c -o arculator-wx-sdl2.o `test -f 'wx-sdl2.c' || echo '$(srcdir)/'`wx-sdl2.c
@@ -1543,20 +1558,6 @@ arculator-wx-sdl2.obj: wx-sdl2.c
 #	$(AM_V_CC)source='wx-sdl2.c' object='arculator-wx-sdl2.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-wx-sdl2.obj `if test -f 'wx-sdl2.c'; then $(CYGPATH_W) 'wx-sdl2.c'; else $(CYGPATH_W) '$(srcdir)/wx-sdl2.c'; fi`
-
-arculator-podules-macosx.o: podules-macosx.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-macosx.o -MD -MP -MF $(DEPDIR)/arculator-podules-macosx.Tpo -c -o arculator-podules-macosx.o `test -f 'podules-macosx.c' || echo '$(srcdir)/'`podules-macosx.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-macosx.Tpo $(DEPDIR)/arculator-podules-macosx.Po
-#	$(AM_V_CC)source='podules-macosx.c' object='arculator-podules-macosx.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-macosx.o `test -f 'podules-macosx.c' || echo '$(srcdir)/'`podules-macosx.c
-
-arculator-podules-macosx.obj: podules-macosx.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -MT arculator-podules-macosx.obj -MD -MP -MF $(DEPDIR)/arculator-podules-macosx.Tpo -c -o arculator-podules-macosx.obj `if test -f 'podules-macosx.c'; then $(CYGPATH_W) 'podules-macosx.c'; else $(CYGPATH_W) '$(srcdir)/podules-macosx.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/arculator-podules-macosx.Tpo $(DEPDIR)/arculator-podules-macosx.Po
-#	$(AM_V_CC)source='podules-macosx.c' object='arculator-podules-macosx.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(arculator_CFLAGS) $(CFLAGS) -c -o arculator-podules-macosx.obj `if test -f 'podules-macosx.c'; then $(CYGPATH_W) 'podules-macosx.c'; else $(CYGPATH_W) '$(srcdir)/podules-macosx.c'; fi`
 
 .cc.o:
 	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1887,6 +1888,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/arculator-ide.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_a3in.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_config.Po
+	-rm -f ./$(DEPDIR)/arculator-ide_hccs_a3k.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_idea.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_riscdev.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_zidefs.Po
@@ -1900,8 +1902,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/arculator-main.Po
 	-rm -f ./$(DEPDIR)/arculator-mem.Po
 	-rm -f ./$(DEPDIR)/arculator-memc.Po
-	-rm -f ./$(DEPDIR)/arculator-podules-linux.Po
-	-rm -f ./$(DEPDIR)/arculator-podules-macosx.Po
+	-rm -f ./$(DEPDIR)/arculator-podules-unix.Po
 	-rm -f ./$(DEPDIR)/arculator-podules-win.Po
 	-rm -f ./$(DEPDIR)/arculator-podules.Po
 	-rm -f ./$(DEPDIR)/arculator-printer.Po
@@ -2004,6 +2005,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/arculator-ide.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_a3in.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_config.Po
+	-rm -f ./$(DEPDIR)/arculator-ide_hccs_a3k.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_idea.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_riscdev.Po
 	-rm -f ./$(DEPDIR)/arculator-ide_zidefs.Po
@@ -2017,8 +2019,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/arculator-main.Po
 	-rm -f ./$(DEPDIR)/arculator-mem.Po
 	-rm -f ./$(DEPDIR)/arculator-memc.Po
-	-rm -f ./$(DEPDIR)/arculator-podules-linux.Po
-	-rm -f ./$(DEPDIR)/arculator-podules-macosx.Po
+	-rm -f ./$(DEPDIR)/arculator-podules-unix.Po
 	-rm -f ./$(DEPDIR)/arculator-podules-win.Po
 	-rm -f ./$(DEPDIR)/arculator-podules.Po
 	-rm -f ./$(DEPDIR)/arculator-printer.Po
@@ -2087,8 +2088,10 @@ uninstall-am: uninstall-binPROGRAMS
 	cp arculator ..
 
 amrefresh:
+
+# Special wxWidgets files
 wx.res: wx.rc
-	$(WINDRES) -i wx.rc --input-format=rc -o wx.res -O coff
+	$(WX_RESCOMP) -i wx.rc --input-format=rc -o wx.res -O coff
 
 wx-resources.cc : arculator.xrc
 	-wxrc -c arculator.xrc -o wx-resources.cc

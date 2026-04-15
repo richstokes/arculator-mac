@@ -94,15 +94,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_1 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../lark.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_3 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_4 = ../lark.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_5 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_6 = ../lark.dylib
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_7 = ../../common/midi/midi_win.c ../../common/sound/sound_wavein.c ../../common/sound/sound_out_sdl2.c
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_8 = ../../common/midi/midi_alsa.c ../../common/sound/sound_alsain.c ../../common/sound/sound_out_sdl2.c
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_9 = ../../common/midi/midi_null.c ../../common/sound/sound_in_null.c ../../common/sound/sound_out_sdl2.c
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_10 = -lwinmm
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../lark$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_3 = $(noinst_SCRIPTS)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_4 = ../lark$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_5 = ../../common/midi/midi_win.c ../../common/sound/sound_wavein.c ../../common/sound/sound_out_sdl2.c
+@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_6 = ../../common/midi/midi_alsa.c ../../common/sound/sound_alsain.c ../../common/sound/sound_out_sdl2.c
+@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_7 = ../../common/midi/midi_null.c ../../common/sound/sound_in_null.c ../../common/sound/sound_out_sdl2.c
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_8 = -lwinmm
 subdir = podules/lark/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -258,6 +256,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -322,6 +321,7 @@ SDL_LIBS = @SDL_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SO_EXT = @SO_EXT@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WX_CFLAGS = @WX_CFLAGS@
@@ -337,6 +337,11 @@ WX_VERSION = @WX_VERSION@
 WX_VERSION_MAJOR = @WX_VERSION_MAJOR@
 WX_VERSION_MICRO = @WX_VERSION_MICRO@
 WX_VERSION_MINOR = @WX_VERSION_MINOR@
+XMKMF = @XMKMF@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -395,16 +400,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 @BUILD_PODULES_TRUE@lib_LTLIBRARIES = liblark.la
-@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4) \
-@BUILD_PODULES_TRUE@	$(am__append_6)
-@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3) \
-@BUILD_PODULES_TRUE@	$(am__append_5)
+@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4)
+@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3)
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@liblark_la_LDFLAGS = -no-undefined
 @BUILD_PODULES_TRUE@liblark_la_SOURCES = ../../common/uart/16550.c \
-@BUILD_PODULES_TRUE@	ad1848.c am7202a.c lark.c $(am__append_7) \
-@BUILD_PODULES_TRUE@	$(am__append_8) $(am__append_9)
+@BUILD_PODULES_TRUE@	ad1848.c am7202a.c lark.c $(am__append_5) \
+@BUILD_PODULES_TRUE@	$(am__append_6) $(am__append_7)
 @BUILD_PODULES_TRUE@liblark_la_CFLAGS = $(SDL_CFLAGS) -I../../../src -I../../common/midi -I../../common/sound -I../../common/uart
-@BUILD_PODULES_TRUE@liblark_la_LIBADD = @LIBS@ $(am__append_10)
+@BUILD_PODULES_TRUE@liblark_la_LIBADD = @LIBS@ $(am__append_8)
 all: all-am
 
 .SUFFIXES:
@@ -895,12 +898,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../lark.dll: liblark.la
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/liblark-0.dll ../lark.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@../lark.so: liblark.la
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@	cp .libs/liblark.so ../lark.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@../lark.dylib: liblark.la
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@	cp .libs/liblark.dylib ../lark.dylib
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../lark$(SO_EXT): liblark.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/liblark-0$(SO_EXT) ../lark$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@../lark$(SO_EXT): liblark.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@	cp .libs/liblark$(SO_EXT) ../lark$(SO_EXT)
 
 @BUILD_PODULES_TRUE@amrefresh:
 

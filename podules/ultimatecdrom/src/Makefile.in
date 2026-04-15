@@ -94,14 +94,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_1 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../ultimatecdrom.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_3 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_4 = ../ultimatecdrom.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_5 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_6 = ../ultimatecdrom.dylib
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_7 = ../../common/cdrom/cdrom-windows-ioctl.c
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_8 = ../../common/cdrom/cdrom-linux-ioctl.c
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_9 = ../../common/cdrom/cdrom-osx-ioctl.c
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../ultimatecdrom$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_3 = $(noinst_SCRIPTS)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_4 = ../ultimatecdrom$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_5 = ../../common/cdrom/cdrom-windows-ioctl.c
+@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_6 = ../../common/cdrom/cdrom-linux-ioctl.c
+@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_7 = ../../common/cdrom/cdrom-osx-ioctl.c
 subdir = podules/ultimatecdrom/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -243,6 +241,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -307,6 +306,7 @@ SDL_LIBS = @SDL_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SO_EXT = @SO_EXT@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WX_CFLAGS = @WX_CFLAGS@
@@ -322,6 +322,11 @@ WX_VERSION = @WX_VERSION@
 WX_VERSION_MAJOR = @WX_VERSION_MAJOR@
 WX_VERSION_MICRO = @WX_VERSION_MICRO@
 WX_VERSION_MINOR = @WX_VERSION_MINOR@
+XMKMF = @XMKMF@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -380,16 +385,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 @BUILD_PODULES_TRUE@lib_LTLIBRARIES = libultimatecdrom.la
-@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4) \
-@BUILD_PODULES_TRUE@	$(am__append_6)
-@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3) \
-@BUILD_PODULES_TRUE@	$(am__append_5)
+@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4)
+@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3)
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@libultimatecdrom_la_LDFLAGS = -no-undefined
 @BUILD_PODULES_TRUE@libultimatecdrom_la_SOURCES = mitsumi.c \
 @BUILD_PODULES_TRUE@	ultimatecdrom.c \
 @BUILD_PODULES_TRUE@	../../common/sound/sound_out_sdl2.c \
-@BUILD_PODULES_TRUE@	$(am__append_7) $(am__append_8) \
-@BUILD_PODULES_TRUE@	$(am__append_9)
+@BUILD_PODULES_TRUE@	$(am__append_5) $(am__append_6) \
+@BUILD_PODULES_TRUE@	$(am__append_7)
 @BUILD_PODULES_TRUE@libultimatecdrom_la_CFLAGS = $(SDL_CFLAGS) -I../../../src -I../../common/cdrom -I../../common/sound
 @BUILD_PODULES_TRUE@libultimatecdrom_la_LIBADD = @LIBS@
 all: all-am
@@ -809,12 +812,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../ultimatecdrom.dll: libultimatecdrom.la
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libultimatecdrom-0.dll ../ultimatecdrom.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@../ultimatecdrom.so: libultimatecdrom.la
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@	cp .libs/libultimatecdrom.so ../ultimatecdrom.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@../ultimatecdrom.dylib: libultimatecdrom.la
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@	cp .libs/libultimatecdrom.dylib ../ultimatecdrom.dylib
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../ultimatecdrom$(SO_EXT): libultimatecdrom.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libultimatecdrom-0$(SO_EXT) ../ultimatecdrom$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@../ultimatecdrom$(SO_EXT): libultimatecdrom.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@	cp .libs/libultimatecdrom$(SO_EXT) ../ultimatecdrom$(SO_EXT)
 
 @BUILD_PODULES_TRUE@amrefresh:
 

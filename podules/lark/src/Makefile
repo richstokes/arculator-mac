@@ -94,15 +94,13 @@ POST_UNINSTALL = :
 build_triplet = aarch64-apple-darwin25.4.0
 host_triplet = aarch64-apple-darwin25.4.0
 #am__append_1 = $(noinst_SCRIPTS)
-#am__append_2 = ../lark.dll
-#am__append_3 = $(noinst_SCRIPTS)
-#am__append_4 = ../lark.so
-am__append_5 = $(noinst_SCRIPTS)
-am__append_6 = ../lark.dylib
-#am__append_7 = ../../common/midi/midi_win.c ../../common/sound/sound_wavein.c ../../common/sound/sound_out_sdl2.c
-#am__append_8 = ../../common/midi/midi_alsa.c ../../common/sound/sound_alsain.c ../../common/sound/sound_out_sdl2.c
-am__append_9 = ../../common/midi/midi_null.c ../../common/sound/sound_in_null.c ../../common/sound/sound_out_sdl2.c
-#am__append_10 = -lwinmm
+#am__append_2 = ../lark$(SO_EXT)
+am__append_3 = $(noinst_SCRIPTS)
+am__append_4 = ../lark$(SO_EXT)
+#am__append_5 = ../../common/midi/midi_win.c ../../common/sound/sound_wavein.c ../../common/sound/sound_out_sdl2.c
+#am__append_6 = ../../common/midi/midi_alsa.c ../../common/sound/sound_alsain.c ../../common/sound/sound_out_sdl2.c
+am__append_7 = ../../common/midi/midi_null.c ../../common/sound/sound_in_null.c ../../common/sound/sound_out_sdl2.c
+#am__append_8 = -lwinmm
 subdir = podules/lark/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -257,14 +255,15 @@ AUTOMAKE = ${SHELL} '/Users/rich/Dropbox/code/arculator-mac/missing' automake-1.
 AWK = awk
 CC = gcc -std=gnu23
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3  -DRELEASE_BUILD -g -O2 -std=gnu17
+CFLAGS = -DSO_EXT=\".dylib\"  -DRELEASE_BUILD -g -O2 -std=gnu17
+CPP = gcc -std=gnu23 -E
 CPPFLAGS = 
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -O3  -DRELEASE_BUILD -g -O2
+CXXFLAGS = -DSO_EXT=\".dylib\"  -DRELEASE_BUILD -g -O2
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"Arculator\" -DPACKAGE_TARNAME=\"arculator\" -DPACKAGE_VERSION=\"v2.2\" -DPACKAGE_STRING=\"Arculator\ v2.2\" -DPACKAGE_BUGREPORT=\"Sarah\ Walker\ \<b-em@bbcmicro.com\>\" -DPACKAGE_URL=\"\" -DPACKAGE=\"arculator\" -DVERSION=\"v2.2\" -DHAVE_STDIO_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UNISTD_H=1 -DSTDC_HEADERS=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIBZ=1 -DHAVE_LIBPTHREAD=1
 DEPDIR = .deps
@@ -288,7 +287,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2
+LIBS = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2  -L/usr/local/lib
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = lipo
 LN_S = ln -s
@@ -322,6 +321,7 @@ SDL_LIBS = -L/opt/homebrew/lib -lSDL2
 SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
+SO_EXT = .dylib
 STRIP = strip
 VERSION = v2.2
 WX_CFLAGS = -I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.3 -I/opt/homebrew/include/wx-3.3 -D_FILE_OFFSET_BITS=64 -DwxDEBUG_LEVEL=0 -DWXUSINGDLL -D__WXMAC__ -D__WXOSX__ -D__WXOSX_COCOA__
@@ -337,6 +337,11 @@ WX_VERSION = 3.3.2
 WX_VERSION_MAJOR = 3
 WX_VERSION_MICRO = 2
 WX_VERSION_MINOR = 3
+XMKMF = 
+X_CFLAGS = 
+X_EXTRA_LIBS = 
+X_LIBS =  -L/usr/local/lib
+X_PRE_LIBS = 
 abs_builddir = /Users/rich/Dropbox/code/arculator-mac/podules/lark/src
 abs_srcdir = /Users/rich/Dropbox/code/arculator-mac/podules/lark/src
 abs_top_builddir = /Users/rich/Dropbox/code/arculator-mac
@@ -395,16 +400,14 @@ top_builddir = ../../..
 top_srcdir = ../../..
 AUTOMAKE_OPTIONS = subdir-objects
 lib_LTLIBRARIES = liblark.la
-noinst_SCRIPTS = $(am__append_2) $(am__append_4) \
-	$(am__append_6)
-CLEANFILES = $(am__append_1) $(am__append_3) \
-	$(am__append_5)
+noinst_SCRIPTS = $(am__append_2) $(am__append_4)
+CLEANFILES = $(am__append_1) $(am__append_3)
 #liblark_la_LDFLAGS = -no-undefined
 liblark_la_SOURCES = ../../common/uart/16550.c \
-	ad1848.c am7202a.c lark.c $(am__append_7) \
-	$(am__append_8) $(am__append_9)
+	ad1848.c am7202a.c lark.c $(am__append_5) \
+	$(am__append_6) $(am__append_7)
 liblark_la_CFLAGS = $(SDL_CFLAGS) -I../../../src -I../../common/midi -I../../common/sound -I../../common/uart
-liblark_la_LIBADD = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2 $(am__append_10)
+liblark_la_LIBADD = -lpthread -lz  -L/opt/homebrew/lib   -framework IOKit -framework Carbon -framework Cocoa -framework QuartzCore -framework AudioToolbox -framework System -framework OpenGL -lwx_osx_cocoau_xrc-3.3 -lwx_osx_cocoau_html-3.3 -lwx_osx_cocoau_qa-3.3 -lwx_osx_cocoau_core-3.3 -lwx_baseu_xml-3.3 -lwx_baseu_net-3.3 -lwx_baseu-3.3  -L/opt/homebrew/lib -lSDL2  -L/usr/local/lib $(am__append_8)
 all: all-am
 
 .SUFFIXES:
@@ -895,12 +898,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-#../lark.dll: liblark.la
-#	cp .libs/liblark-0.dll ../lark.dll
-#../lark.so: liblark.la
-#	cp .libs/liblark.so ../lark.so
-../lark.dylib: liblark.la
-	cp .libs/liblark.dylib ../lark.dylib
+#../lark$(SO_EXT): liblark.la
+#	cp .libs/liblark-0$(SO_EXT) ../lark$(SO_EXT)
+../lark$(SO_EXT): liblark.la
+	cp .libs/liblark$(SO_EXT) ../lark$(SO_EXT)
 
 amrefresh:
 

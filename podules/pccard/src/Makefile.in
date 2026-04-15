@@ -94,11 +94,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_1 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../pccard.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_3 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@am__append_4 = ../pccard.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_5 = $(noinst_SCRIPTS)
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@am__append_6 = ../pccard.dylib
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@am__append_2 = ../pccard$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_3 = $(noinst_SCRIPTS)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@am__append_4 = ../pccard$(SO_EXT)
 subdir = podules/pccard/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -270,6 +268,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -334,6 +333,7 @@ SDL_LIBS = @SDL_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SO_EXT = @SO_EXT@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WX_CFLAGS = @WX_CFLAGS@
@@ -349,6 +349,11 @@ WX_VERSION = @WX_VERSION@
 WX_VERSION_MAJOR = @WX_VERSION_MAJOR@
 WX_VERSION_MICRO = @WX_VERSION_MICRO@
 WX_VERSION_MINOR = @WX_VERSION_MINOR@
+XMKMF = @XMKMF@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -407,10 +412,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 @BUILD_PODULES_TRUE@lib_LTLIBRARIES = libpccard.la
-@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4) \
-@BUILD_PODULES_TRUE@	$(am__append_6)
-@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3) \
-@BUILD_PODULES_TRUE@	$(am__append_5)
+@BUILD_PODULES_TRUE@noinst_SCRIPTS = $(am__append_2) $(am__append_4)
+@BUILD_PODULES_TRUE@CLEANFILES = $(am__append_1) $(am__append_3)
 @BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@libpccard_la_LDFLAGS = -no-undefined
 @BUILD_PODULES_TRUE@libpccard_la_SOURCES = pccard_podule.c pcem/808x.c \
 @BUILD_PODULES_TRUE@	pcem/386.c pcem/386_common.c \
@@ -1030,12 +1033,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../pccard.dll: libpccard.la
-@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libpccard-0.dll ../pccard.dll
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@../pccard.so: libpccard.la
-@BUILD_PODULES_TRUE@@OS_LINUX_TRUE@	cp .libs/libpccard.so ../pccard.so
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@../pccard.dylib: libpccard.la
-@BUILD_PODULES_TRUE@@OS_MACOSX_TRUE@	cp .libs/libpccard.dylib ../pccard.dylib
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@../pccard$(SO_EXT): libpccard.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_TRUE@	cp .libs/libpccard-0$(SO_EXT) ../pccard$(SO_EXT)
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@../pccard$(SO_EXT): libpccard.la
+@BUILD_PODULES_TRUE@@OS_WINDOWS_FALSE@	cp .libs/libpccard$(SO_EXT) ../pccard$(SO_EXT)
 
 @BUILD_PODULES_TRUE@amrefresh:	
 
