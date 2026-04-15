@@ -31,8 +31,8 @@ typedef struct zidefs_ide_t
 	ide_t ide;
 } zidefs_ide_t;
 
-static void zidefs_ide_irq_raise();
-static void zidefs_ide_irq_clear();
+static void zidefs_ide_irq_raise(ide_t *ide);
+static void zidefs_ide_irq_clear(ide_t *ide);
 
 static int zidefs_ide_init(struct podule_t *podule)
 {

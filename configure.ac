@@ -45,7 +45,14 @@ AC_MSG_CHECKING([whether to build podules])
 AC_ARG_ENABLE(podules,
           AS_HELP_STRING([--disable-podules],[don't build podules]))
 if test "$enable_podules" != "no"; then
-   AC_MSG_RESULT([yes])
+   module=no eval SO_EXT=$shrext_cmds
+   if test "$SO_EXT" = ""; then
+      SO_EXT=.so
+   fi
+   AC_SUBST(SO_EXT, "$SO_EXT")
+   CFLAGS_BUILD="-DSO_EXT=\\\"$SO_EXT\\\""
+
+   AC_MSG_RESULT([yes ($SO_EXT)])
 else
    AC_MSG_RESULT([no])
 fi
@@ -75,6 +82,16 @@ if test "$wxWin" != 1; then
       wxWidgets version is $reqwx or above.
       ])
 fi
+
+case "$host" in
+    *-*-cygwin* | *-*-mingw32*)
+       ;;
+    *)
+       AC_PATH_XTRA
+       AS_IF([test "X$no_x" = "Xyes"],
+         [AC_MSG_ERROR([Could not find X11])])
+       ;;
+esac
 
 AC_CHECK_LIB([pthread], [pthread_create])
 
@@ -107,7 +124,7 @@ esac
 
 CFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CFLAGS"
 CXXFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CXXFLAGS"
-LIBS="$LIBS $WX_LIBS $SDL_LIBS"
+LIBS="$LIBS $WX_LIBS $SDL_LIBS $X_LIBS"
 
 AM_CONDITIONAL(OS_LINUX, [test "$build_linux" = "yes"])
 AM_CONDITIONAL(OS_WINDOWS, [test "$build_win" = "yes"])
