@@ -53,6 +53,17 @@ else
    AC_MSG_RESULT([no])
 fi
 
+AC_MSG_CHECKING([whether to use wxwidgets for main window])
+AC_ARG_ENABLE(wx_main_window,
+          AS_HELP_STRING([--enable-wx-main-window],[build for wx main window]))
+if test "$enable_wx_main_window" = "yes"; then
+   AC_MSG_RESULT([yes])
+   CFLAGS_UI_WX=" -DUI_WX"
+else
+   AC_MSG_RESULT([no])
+fi
+AM_CONDITIONAL(RELEASE_BUILD, [test "$enable_release_build" = "yes"])
+
 AC_MSG_CHECKING([for libz])
 AC_CHECK_LIB(z, inflateEnd, [], \
           [echo "You need to install the Zlib library."
@@ -118,8 +129,8 @@ case "$host" in
        ;;
 esac
 
-CFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CFLAGS"
-CXXFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CXXFLAGS"
+CFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CFLAGS_UI_WX $CFLAGS"
+CXXFLAGS="$CFLAGS_BUILD $CFLAGS_RELEASE $CFLAGS_UI_WX $CXXFLAGS"
 LIBS="$LIBS $WX_LIBS $SDL_LIBS $X_LIBS"
 
 AM_CONDITIONAL(OS_LINUX, [test "$build_linux" = "yes"])
@@ -127,7 +138,8 @@ AM_CONDITIONAL(OS_WINDOWS, [test "$build_win" = "yes"])
 AM_CONDITIONAL(OS_OTHER, [test "$build_other" = "yes"])
 AM_CONDITIONAL(OS_MACOSX, [test "$build_macosx" = "yes"])
 
-AM_CONDITIONAL(BUILD_PODULES, [test "$enable_podules" != "no"])
+AM_CONDITIONAL(BUILD_PODULES, [test "$enable_podules" = "yes"])
+AM_CONDITIONAL(UI_WX, [test "$enable_wx_main_window" = "yes"])
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
