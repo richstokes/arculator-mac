@@ -4,6 +4,9 @@
 #include <wx/wx.h>
 #include <wx/rawbmp.h>
 #endif
+#ifdef __APPLE__
+#include <wx/display.h>
+#endif
 
 #include <SDL.h>
 
@@ -170,12 +173,7 @@ void MainCanvas::OnKeyDown(wxKeyEvent &event)
 	{
 //		printf("CTRL+END\n");
 		if (fullscreen)
-		{
-			wxFrame *frame = wxDynamicCast(wxGetTopLevelParent(this), wxFrame);
-			if (frame)
-				frame->ShowFullScreen(false);
-			fullscreen = 0;
-		}
+			static_cast<MainFrame *>(wxGetTopLevelParent(this))->LeaveFullScreen();
 		if (mousecapture)
 		{
 			mouse_capture_disable();
@@ -233,7 +231,7 @@ wxEND_EVENT_TABLE()
 
 MainFrame::MainFrame(Frame *parent, const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE | wxWANTS_CHARS),
-	  parent(parent)
+	  canvas(NULL), parent(parent), initial_size_set(false)
 {
 	canvas = new MainCanvas(this, "editor", wxDefaultPosition, wxDefaultSize);
 	SetMenuBar((wxMenuBar *)main_menu);
@@ -258,15 +256,68 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 
 void MainFrame::OnResize(MyResizeEvent& event)
 {
+	// VIDC reports incomplete dimensions while the first mode is being set.
+	if (event.video_width <= 0 || event.video_height <= 0 ||
+	    event.window_width <= 0 || event.window_height <= 0)
+		return;
+
 	vidx = event.video_width;
 	vidy = event.video_height;
 	if (!fullscreen)
+	{
+#ifdef __APPLE__
+		// Cocoa can move the frame when its client size changes. Avoid repeated
+		// resizes and preserve the current position across genuine mode changes.
+		wxSize requested_size(event.window_width, event.window_height);
+		if (requested_size != last_window_size)
+		{
+			wxPoint window_position = GetPosition();
+			SetClientSize(requested_size);
+			last_window_size = requested_size;
+			if (initial_size_set)
+				Move(window_position);
+		}
+		if (!initial_size_set)
+		{
+			// Place the first usable mode in the centre of its current display.
+			int display_index = wxDisplay::GetFromWindow(this);
+			if (display_index == wxNOT_FOUND)
+				display_index = 0;
+			wxRect display_area = wxDisplay(display_index).GetClientArea();
+			Move(display_area.x + (display_area.width - event.window_width) / 2,
+			     display_area.y + (display_area.height - event.window_height) / 2);
+			initial_size_set = true;
+		}
+#else
 		SetClientSize(event.window_width, event.window_height);
+#endif
+	}
 }
 
 void MainFrame::OnTitle(wxThreadEvent& event)
 {
 	SetLabel(event.GetString());
+}
+
+void MainFrame::EnterFullScreen()
+{
+	if (fullscreen)
+		return;
+
+	windowed_rect = GetRect();
+	fullscreen = 1;
+	ShowFullScreen(true);
+	canvas->SetFocus();
+}
+
+void MainFrame::LeaveFullScreen()
+{
+	if (!fullscreen)
+		return;
+
+	ShowFullScreen(false);
+	fullscreen = 0;
+	SetSize(windowed_rect);
 }
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -487,9 +538,7 @@ extern "C" void arc_set_resizeable()
 
 extern "C" void arc_enter_fullscreen()
 {
-	fullscreen = 1;
-	arcFrame->ShowFullScreen(true);
-	arcFrame->GetCanvas()->SetFocus();
+	arcFrame->EnterFullScreen();
 }
 
 extern "C" void video_renderer_present(int src_x, int src_y, int src_w, int src_h, int dblscan)

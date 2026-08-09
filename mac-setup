@@ -48,5 +48,10 @@ autoreconf --force --install
 # work remains on the main thread.
 ./configure "$@"
 
+# Changing the selected window backend alters both the executable's object list
+# and compilation flags, which Make does not detect by itself. Clean any prior
+# build so objects configured for a different backend cannot be reused.
+make clean
+
 echo
 echo "Configuration complete. Run 'make' to build Arculator."

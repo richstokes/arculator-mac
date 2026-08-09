@@ -85,6 +85,8 @@ public:
 	virtual ~MainFrame();
 
 	MainCanvas *GetCanvas() { return canvas; }
+	void EnterFullScreen();
+	void LeaveFullScreen();
 	void UpdateMenu()
 	{
 		parent->UpdateMenu();
@@ -98,6 +100,9 @@ private:
 
 	MainCanvas *canvas;
 	Frame *parent;
+	bool initial_size_set;
+	wxSize last_window_size;
+	wxRect windowed_rect;
 
 	wxDECLARE_EVENT_TABLE();
 };
