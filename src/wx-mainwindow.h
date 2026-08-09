@@ -6,14 +6,17 @@ extern "C"
 
 class MyPlotEvent;
 wxDECLARE_EVENT(myEVT_PLOT, MyPlotEvent);
+class MyResizeEvent;
+wxDECLARE_EVENT(myEVT_RESIZE, MyResizeEvent);
+wxDECLARE_EVENT(myEVT_TITLE, wxThreadEvent);
 
 class MainCanvas: public wxWindow
 {
 public:
 	MainCanvas(wxWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxWindow(parent, wxID_ANY, pos, size, wxDEFAULT_FRAME_STYLE | wxWANTS_CHARS),
-	  bmp(2048, 2048, 24),
-	  dx(0), dy(0), last_mouse_pos(0, 0)
+	  dx(0), dy(0), b(0),
+	  bmp(2048, 2048, 24), last_mouse_pos(0, 0)
 	{
 	}
 
@@ -90,6 +93,8 @@ public:
 private:
 	void OnClose(wxCloseEvent& event);
 	void OnMenu(wxCommandEvent& event);
+	void OnResize(MyResizeEvent& event);
+	void OnTitle(wxThreadEvent& event);
 
 	MainCanvas *canvas;
 	Frame *parent;

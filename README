@@ -1,0 +1,28 @@
+Arculator
+~~~~~~~~~
+
+Arculator is an Acorn Archimedes emulator for Windows, Linux and macOS.
+See readme.txt for configuration and usage information.
+
+
+Building on macOS
+~~~~~~~~~~~~~~~~~
+
+The macOS build requires Homebrew and the Xcode Command Line Tools. From a
+checkout of this repository, run:
+
+    ./mac-setup
+    make -j"$(sysctl -n hw.logicalcpu)"
+
+mac-setup installs the required Homebrew packages, refreshes the build files
+and configures Arculator to use its native wxWidgets main window. It supports
+both Apple Silicon and Intel Macs. Pass "force" as the first argument to
+reinstall the Homebrew dependencies, or pass additional configure options
+after it. For example:
+
+    ./mac-setup --enable-debug
+
+Place the required RISC OS ROM images in the appropriate directories under
+roms, then run Arculator from the repository root:
+
+    ./arculator

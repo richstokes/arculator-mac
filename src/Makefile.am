@@ -48,6 +48,12 @@ else
 arculator_SOURCES += input_sdl2.c video_sdl2.c wx-sdl2.c
 endif
 arculator_SOURCES += hostfs-unix.c podules-unix.c
-arculator_LDADD += -ldl -lX11
+arculator_LDADD += -ldl
+if OS_LINUX
+arculator_LDADD += -lX11
+endif
+if OS_OTHER
+arculator_LDADD += -lX11
+endif
 endif
 

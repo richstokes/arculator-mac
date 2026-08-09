@@ -58,6 +58,9 @@ App::App()
 
 bool App::OnInit()
 {
+#ifdef __APPLE__
+	SetExitOnFrameDelete(true);
+#endif
 	wxImage::AddHandler( new wxPNGHandler );
 	wxXmlResource::Get()->InitAllHandlers();
 	InitXmlResource();
@@ -82,6 +85,7 @@ bool App::OnInit()
 
 static void *main_frame = NULL;
 void *main_menu = NULL;
+static bool quit_after_stop = false;
 
 static wxMenuItem *find_item(int id)
 {
@@ -142,6 +146,11 @@ void Frame::OnStopEmulationEvent(wxCommandEvent &event)
 	arc_stop_main_thread();
 
 	debug_end();
+	if (quit_after_stop)
+	{
+		Quit(0);
+		return;
+	}
 
 	if (!ShowConfigSelection())
 		arc_start_main_thread(this, this->menu);
@@ -212,7 +221,7 @@ void Frame::UpdateMenu()
 	else
 		item = find_item(XRCID("IDM_BLACK_NORMAL"));
 	item->Check(true);
-	sprintf(menuitem, "IDM_VIDEO_SCALE[%d]", video_scale);
+	snprintf(menuitem, sizeof(menuitem), "IDM_VIDEO_SCALE[%d]", video_scale);
 	item = find_item(XRCID(menuitem));
 	item->Check(true);
 
@@ -267,11 +276,16 @@ extern "C" void arc_send_close();
 
 void OnMenuCommandCommon( wxCommandEvent &event, wxWindow *parent)
 {
-	if (event.GetId() == XRCID("IDM_FILE_EXIT"))
+	if (event.GetId() == XRCID("IDM_FILE_EXIT")
+#ifdef __APPLE__
+			|| event.GetId() == wxID_EXIT
+#endif
+			)
 	{
 #ifdef _WIN32
 		arc_send_close();
 #else
+		quit_after_stop = true;
 		arc_stop_emulation();
 #endif
 	}
@@ -410,7 +424,11 @@ void OnMenuCommandCommon( wxCommandEvent &event, wxWindow *parent)
 			firstfull = 0;
 
 			arc_pause_main_thread();
+#ifdef __APPLE__
+			wxMessageBox("Use CMD + BACKSPACE to return to windowed mode", "Arculator", wxOK | wxCENTRE | wxSTAY_ON_TOP);
+#else
 			wxMessageBox("Use CTRL + END to return to windowed mode", "Arculator", wxOK | wxCENTRE | wxSTAY_ON_TOP);
+#endif
 			arc_resume_main_thread();
 		}
 		arc_enter_fullscreen();
@@ -639,7 +657,7 @@ extern "C" void arc_print_error(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	vsprintf(buf, format, ap);
+	vsnprintf(buf, sizeof(buf), format, ap);
 	va_end(ap);
 
 	event->SetString(wxString(buf));

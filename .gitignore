@@ -1,2 +1,38 @@
 .vscode
+.DS_Store
 
+# Autotools output
+autom4te.cache/
+config.log
+config.status
+configure~
+*~
+libtool
+**/Makefile
+**/Makefile.in
+/m4/libtool.m4
+/m4/lt*.m4
+
+# Compiler output
+.dirstamp
+**/.deps/
+**/.libs/
+*.o
+*.lo
+*.la
+*.dylib
+/arculator
+/src/arculator
+/src/wx-resources.cc
+
+# Runtime files
+/arc.cfg
+/arclog.txt
+/*_log.txt
+/cmos/*.bin
+/configs/*.cfg
+/modules.dmp
+/roms/**/*.[Rr][Oo][Mm]
+
+# Local wxWidgets source archives and trees
+/wxWidgets-*

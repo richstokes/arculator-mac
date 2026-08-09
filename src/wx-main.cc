@@ -7,7 +7,7 @@
 
 extern "C"
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
 	#include <X11/Xlib.h>
 #endif
 	#include "arc.h"
@@ -17,7 +17,7 @@ extern "C"
 
 int main(int argc, char **argv)
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
 	XInitThreads();
 #endif
 

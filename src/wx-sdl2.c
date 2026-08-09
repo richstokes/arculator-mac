@@ -120,11 +120,21 @@ static int arc_main_thread(void *p)
 					break;
 				}
 			}
+#ifdef __APPLE__
+			if ((key[KEY_LWIN] || key[KEY_RWIN])
+			    && key[KEY_BACKSPACE]
+			    && !fullscreen && mousecapture)
+#else
 			if ((key[KEY_LCONTROL] || key[KEY_RCONTROL])
 			    && key[KEY_END]
 			    && !fullscreen && mousecapture)
+#endif
 			{
+#ifdef __APPLE__
+				rpclog("CMD-BACKSPACE pressed -- disabling mouse capture\n");
+#else
 				rpclog("CTRL-END pressed -- disabling mouse capture\n");
+#endif
 				sdl_disable_mouse_capture();
 			}
 		}
@@ -159,8 +169,13 @@ static int arc_main_thread(void *p)
 			sdl_enable_mouse_capture();
 			fullscreen = 1;
 		} else if (fullscreen && (
+#ifdef __APPLE__
+			/*Exit fullscreen with Cmd-Backspace*/
+			((key[KEY_LWIN] || key[KEY_RWIN]) && key[KEY_BACKSPACE])
+#else
 			/*Exit fullscreen with Ctrl-End*/
 			((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END])
+#endif
 			/*Toggle with RWIN-Enter*/
 			|| (key[KEY_RWIN] && key[KEY_ENTER])
 		))
@@ -208,7 +223,11 @@ static int arc_main_thread(void *p)
 		{
 			char s[80];
 
-			sprintf(s, "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CTRL-END to release mouse" : "Click to capture mouse");
+#ifdef __APPLE__
+			snprintf(s, sizeof(s), "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CMD-BACKSPACE to release mouse" : "Click to capture mouse");
+#else
+			snprintf(s, sizeof(s), "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CTRL-END to release mouse" : "Click to capture mouse");
+#endif
 			vidc_framecount = 0;
 			if (!fullscreen)
 				SDL_SetWindowTitle(sdl_main_window, s);

@@ -5,10 +5,20 @@ AC_PREREQ([2.69])
 AC_INIT([Arculator],[v2.2],[Sarah Walker <b-em@bbcmicro.com>],[arculator])
 
 AC_CANONICAL_HOST
+AC_CONFIG_MACRO_DIRS([m4])
 
 AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_CXX
+
+# Autoconf 2.72 and later may select C23 automatically. Arculator still uses
+# pre-C23 function declarations, so default to the last compatible standard
+# unless the caller selected one explicitly.
+case " $CFLAGS " in
+   *" -std="*) ;;
+   *) CFLAGS="$CFLAGS -std=gnu17" ;;
+esac
+
 AM_PROG_CC_C_O
 AC_CACHE_VAL(lt_cv_deplibs_check_method,
     [lt_cv_deplibs_check_method=pass_all])
@@ -46,7 +56,7 @@ if test "$enable_podules" != "no"; then
       SO_EXT=.so
    fi
    AC_SUBST(SO_EXT, "$SO_EXT")
-   CFLAGS_BUILD="-DSO_EXT=\\\"$SO_EXT\\\""
+   CFLAGS_BUILD="$CFLAGS_BUILD -DSO_EXT=\\\"$SO_EXT\\\""
 
    AC_MSG_RESULT([yes ($SO_EXT)])
 else
@@ -55,14 +65,17 @@ fi
 
 AC_MSG_CHECKING([whether to use wxwidgets for main window])
 AC_ARG_ENABLE(wx_main_window,
-          AS_HELP_STRING([--enable-wx-main-window],[build for wx main window]))
+          AS_HELP_STRING([--enable-wx-main-window],[build for wx main window (default on macOS)]),
+          [],
+          [case "$host" in
+              *-*-darwin*) enable_wx_main_window=yes ;;
+           esac])
 if test "$enable_wx_main_window" = "yes"; then
    AC_MSG_RESULT([yes])
    CFLAGS_UI_WX=" -DUI_WX"
 else
    AC_MSG_RESULT([no])
 fi
-AM_CONDITIONAL(RELEASE_BUILD, [test "$enable_release_build" = "yes"])
 
 AC_MSG_CHECKING([for libz])
 AC_CHECK_LIB(z, inflateEnd, [], \
@@ -91,7 +104,7 @@ if test "$wxWin" != 1; then
 fi
 
 case "$host" in
-    *-*-cygwin* | *-*-mingw32*)
+    *-*-cygwin* | *-*-mingw32* | *-*-darwin*)
        ;;
     *)
        AC_PATH_XTRA
@@ -138,11 +151,9 @@ AM_CONDITIONAL(OS_WINDOWS, [test "$build_win" = "yes"])
 AM_CONDITIONAL(OS_OTHER, [test "$build_other" = "yes"])
 AM_CONDITIONAL(OS_MACOSX, [test "$build_macosx" = "yes"])
 
-AM_CONDITIONAL(BUILD_PODULES, [test "$enable_podules" = "yes"])
+AM_CONDITIONAL(BUILD_PODULES, [test "$enable_podules" != "no"])
 AM_CONDITIONAL(UI_WX, [test "$enable_wx_main_window" = "yes"])
 
 AC_CONFIG_FILES([Makefile src/Makefile])
-AC_OUTPUT
-
 AC_CONFIG_FILES([podules/aeh50/src/Makefile podules/aeh54/src/Makefile podules/aka05/src/Makefile podules/aka10/src/Makefile podules/aka12/src/Makefile podules/aka16/src/Makefile podules/aka31/src/Makefile podules/designit_e200/src/Makefile podules/lark/src/Makefile podules/midimax/src/Makefile podules/morley_uap/src/Makefile podules/oak_scsi/src/Makefile podules/pccard/src/Makefile podules/ultimatecdrom/src/Makefile])
 AC_OUTPUT

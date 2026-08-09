@@ -22,7 +22,6 @@ extern "C"
 	#include "video.h"
 }
 
-static int winsizex = 0, winsizey = 0;
 static int vidx = 0, vidy = 0;
 
 extern "C" BITMAP *wxbuffer;
@@ -60,6 +59,27 @@ typedef void (wxEvtHandler::*MyPlotEventFunction)(MyPlotEvent&);
     wx__DECLARE_EVT1(myEVT_PLOT, wxID_ANY, MyPlotEventHandler(func))
 
 wxDEFINE_EVENT(myEVT_PLOT, MyPlotEvent);
+
+class MyResizeEvent: public wxCommandEvent
+{
+public:
+	MyResizeEvent(int video_width, int video_height, int window_width, int window_height)
+		: wxCommandEvent(myEVT_RESIZE),
+		  video_width(video_width),
+		  video_height(video_height),
+		  window_width(window_width),
+		  window_height(window_height)
+	{
+	}
+
+	virtual wxEvent *Clone() const { return new MyResizeEvent(*this); }
+
+	int video_width, video_height;
+	int window_width, window_height;
+};
+
+wxDEFINE_EVENT(myEVT_RESIZE, MyResizeEvent);
+wxDEFINE_EVENT(myEVT_TITLE, wxThreadEvent);
 
 
 void MainCanvas::OnPaint(wxPaintEvent &event)
@@ -142,9 +162,20 @@ void MainCanvas::OnKeyDown(wxKeyEvent &event)
 	int kc = event.GetKeyCode();
 //	printf("keycode %i\n", kc);
 
+#ifdef __APPLE__
+	if ((kc == WXK_BACK || kc == WXK_DELETE) && event.CmdDown())
+#else
 	if (kc == WXK_END && event.GetModifiers() == wxMOD_CONTROL)
+#endif
 	{
 //		printf("CTRL+END\n");
+		if (fullscreen)
+		{
+			wxFrame *frame = wxDynamicCast(wxGetTopLevelParent(this), wxFrame);
+			if (frame)
+				frame->ShowFullScreen(false);
+			fullscreen = 0;
+		}
 		if (mousecapture)
 		{
 			mouse_capture_disable();
@@ -206,6 +237,8 @@ MainFrame::MainFrame(Frame *parent, const wxString& title, const wxPoint& pos, c
 {
 	canvas = new MainCanvas(this, "editor", wxDefaultPosition, wxDefaultSize);
 	SetMenuBar((wxMenuBar *)main_menu);
+	Bind(myEVT_RESIZE, &MainFrame::OnResize, this);
+	Bind(myEVT_TITLE, &MainFrame::OnTitle, this);
 }
 
 MainFrame::~MainFrame()
@@ -221,6 +254,19 @@ void MainFrame::OnClose(wxCloseEvent& event)
 void MainFrame::OnMenu(wxCommandEvent& event)
 {
 	OnMenuCommandCommon(event, this);
+}
+
+void MainFrame::OnResize(MyResizeEvent& event)
+{
+	vidx = event.video_width;
+	vidy = event.video_height;
+	if (!fullscreen)
+		SetClientSize(event.window_width, event.window_height);
+}
+
+void MainFrame::OnTitle(wxThreadEvent& event)
+{
+	SetLabel(event.GetString());
 }
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -294,10 +340,18 @@ extern "C" int arc_main_thread(void *p)
 		{
 			char s[80];
 
-			sprintf(s, "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CTRL-END to release mouse" : "Click to capture mouse");
+#ifdef __APPLE__
+			snprintf(s, sizeof(s), "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CMD-BACKSPACE to release mouse" : "Click to capture mouse");
+#else
+			snprintf(s, sizeof(s), "Arculator %s - %i%% - %s", VERSION_STRING, inssec, mousecapture ? "Press CTRL-END to release mouse" : "Click to capture mouse");
+#endif
 			vidc_framecount = 0;
 			if (!fullscreen)
-				arcFrame->SetLabel(s);
+			{
+				wxThreadEvent *event = new wxThreadEvent(myEVT_TITLE);
+				event->SetString(s);
+				wxQueueEvent(arcFrame, event);
+			}
 			updatemips=0;
 		}
 	}
@@ -309,12 +363,11 @@ extern "C" int arc_main_thread(void *p)
 
 extern "C" void updatewindowsize(int x, int y)
 {
-	arcFrame->SetClientSize(winsizex, winsizey);
-	vidx = x;
-	vidy = y;
-	winsizex = (x*(video_scale + 1)) / 2;
-	winsizey = (y*(video_scale + 1)) / 2;
-	/*win_doresize = 1;*/
+	int window_width = (x*(video_scale + 1)) / 2;
+	int window_height = (y*(video_scale + 1)) / 2;
+
+	MyResizeEvent *event = new MyResizeEvent(x, y, window_width, window_height);
+	wxQueueEvent(arcFrame, event);
 }
 
 extern "C" void arc_start_main_thread(void *wx_window, void *wx_menu)
@@ -434,6 +487,9 @@ extern "C" void arc_set_resizeable()
 
 extern "C" void arc_enter_fullscreen()
 {
+	fullscreen = 1;
+	arcFrame->ShowFullScreen(true);
+	arcFrame->GetCanvas()->SetFocus();
 }
 
 extern "C" void video_renderer_present(int src_x, int src_y, int src_w, int src_h, int dblscan)
